@@ -100,6 +100,8 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`^\;`), defaultHandler(SEMICOLON, ";")},
 			{regexp.MustCompile(`^\:`), defaultHandler(COLON, ":")},
 			{regexp.MustCompile(`^\,`), defaultHandler(COMMA, ",")},
+			{regexp.MustCompile(`^\&\&`), defaultHandler(AND, "&&")},
+			{regexp.MustCompile(`^\|\|`), defaultHandler(OR, "||")},
 			{regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*`), identifierHandler},
 			// Keywords will be matched as identifiers and converted in the handler
 		},

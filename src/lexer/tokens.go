@@ -45,6 +45,10 @@ const (
 	DIVIDE_EQUALS   // /=
 	MODULUS_EQUALS  // %=
 
+	// Logical
+	AND // &&
+	OR  // ||
+
 	// Keywords
 	IF
 	ELSE
@@ -87,44 +91,44 @@ const (
 )
 
 var keywords = map[string]TokenKind{
-	"if":         IF,
-	"else":       ELSE,
-	"for":        FOR,
-	"while":      WHILE,
-	"do":         DO,
-	"switch":     SWITCH,
-	"case":       CASE,
-	"default":    DEFAULT,
-	"break":      BREAK,
-	"continue":   CONTINUE,
-	"return":     RETURN,
-	"true":       TRUE,
-	"false":      FALSE,
-	"null":       NULL,
-	"new":        NEW,
-	"this":       THIS,
-	"base":       BASE,
-	"import":     IMPORT,
-	"namespace":  NAMESPACE,
-	"using":      USING,
-	"class":      CLASS,
-	"struct":     STRUCT,
-	"interface":  INTERFACE,
-	"enum":       ENUM,
-	"public":     PUBLIC,
-	"private":    PRIVATE,
-	"protected":  PROTECTED,
-	"internal":   INTERNAL,
-	"static":     STATIC,
-	"const":      CONST,
-	"void":       VOID,
-	"var":        VAR,
-	"bool":       BOOL,
-	"char":       CHAR,
-	"int":        INT,
-	"float":      FLOAT,
-	"double":     DOUBLE,
-	"string":     STRING_TYPE,
+	"if":        IF,
+	"else":      ELSE,
+	"for":       FOR,
+	"while":     WHILE,
+	"do":        DO,
+	"switch":    SWITCH,
+	"case":      CASE,
+	"default":   DEFAULT,
+	"break":     BREAK,
+	"continue":  CONTINUE,
+	"return":    RETURN,
+	"true":      TRUE,
+	"false":     FALSE,
+	"null":      NULL,
+	"new":       NEW,
+	"this":      THIS,
+	"base":      BASE,
+	"import":    IMPORT,
+	"namespace": NAMESPACE,
+	"using":     USING,
+	"class":     CLASS,
+	"struct":    STRUCT,
+	"interface": INTERFACE,
+	"enum":      ENUM,
+	"public":    PUBLIC,
+	"private":   PRIVATE,
+	"protected": PROTECTED,
+	"internal":  INTERNAL,
+	"static":    STATIC,
+	"const":     CONST,
+	"void":      VOID,
+	"var":       VAR,
+	"bool":      BOOL,
+	"char":      CHAR,
+	"int":       INT,
+	"float":     FLOAT,
+	"double":    DOUBLE,
+	"string":    STRING_TYPE,
 }
 
 type Token struct {
@@ -295,6 +299,10 @@ func TokenKindString(kind TokenKind) string {
 		return "DOUBLE"
 	case STRING_TYPE:
 		return "STRING_TYPE"
+	case AND:
+		return "AND"
+	case OR:
+		return "OR"
 	default:
 		return "default"
 	}
