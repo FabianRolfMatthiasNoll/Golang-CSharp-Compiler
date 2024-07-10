@@ -4,6 +4,7 @@ class Car
 
   static void Main(string[] args)
   {
+    if("hello" == test && "Bye" != test)
     Car myObj = new Car();
     Console.WriteLine(myObj.color);
   }

@@ -132,6 +132,7 @@ var keywords = map[string]TokenKind{
 }
 
 type Token struct {
+	// TODO: Keep track of line and column number
 	Kind  TokenKind
 	Value string
 }
