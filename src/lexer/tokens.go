@@ -11,12 +11,12 @@ const (
 	STRING
 	IDENTIFIER
 
-	OPEN_BRACKET
-	CLOSE_BRACKET
-	OPEN_PAREN
-	CLOSE_PAREN
-	OPEN_BRACE
-	CLOSE_BRACE
+	OPEN_BRACKET  // [
+	CLOSE_BRACKET // ]
+	OPEN_PAREN    // (
+	CLOSE_PAREN   // )
+	OPEN_BRACE    // {
+	CLOSE_BRACE   // }
 
 	ASSIGNMENT            // =
 	EQUALS                // ==
@@ -60,43 +60,79 @@ const (
 	TRUE
 	FALSE
 	NULL
-
-	// Types
-	INT
-	FLOAT
-	STRING_TYPE
-	CHAR
-	BOOL
-	VOID
+	NEW
+	THIS
+	BASE
+	IMPORT
+	NAMESPACE
+	USING
+	CLASS
 	STRUCT
+	INTERFACE
 	ENUM
-	TYPEDEF
-	CONST
-	STATIC
-	EXTERN
 	PUBLIC
 	PRIVATE
 	PROTECTED
-	INTERFACE
-	CLASS
-	IMPLEMENTS
-	EXTENDS
-	NEW
-	DELETE
-	THIS
-	SUPER
-	IMPORT
-	PACKAGE
-	EXPORT
-	FOREACH
+	INTERNAL
+	STATIC
+	CONST
+	VOID
+	VAR
+	BOOL
+	CHAR
+	INT
+	FLOAT
+	DOUBLE
+	STRING_TYPE
 )
+
+var keywords = map[string]TokenKind{
+	"if":         IF,
+	"else":       ELSE,
+	"for":        FOR,
+	"while":      WHILE,
+	"do":         DO,
+	"switch":     SWITCH,
+	"case":       CASE,
+	"default":    DEFAULT,
+	"break":      BREAK,
+	"continue":   CONTINUE,
+	"return":     RETURN,
+	"true":       TRUE,
+	"false":      FALSE,
+	"null":       NULL,
+	"new":        NEW,
+	"this":       THIS,
+	"base":       BASE,
+	"import":     IMPORT,
+	"namespace":  NAMESPACE,
+	"using":      USING,
+	"class":      CLASS,
+	"struct":     STRUCT,
+	"interface":  INTERFACE,
+	"enum":       ENUM,
+	"public":     PUBLIC,
+	"private":    PRIVATE,
+	"protected":  PROTECTED,
+	"internal":   INTERNAL,
+	"static":     STATIC,
+	"const":      CONST,
+	"void":       VOID,
+	"var":        VAR,
+	"bool":       BOOL,
+	"char":       CHAR,
+	"int":        INT,
+	"float":      FLOAT,
+	"double":     DOUBLE,
+	"string":     STRING_TYPE,
+}
 
 type Token struct {
 	Kind  TokenKind
 	Value string
 }
 
-func (token Token) isOneOfMany (expectedTokens ...TokenKind) bool {
+func (token Token) isOneOfMany(expectedTokens ...TokenKind) bool {
 	for _, expectedToken := range expectedTokens {
 		if token.Kind == expectedToken {
 			return true
@@ -211,22 +247,54 @@ func TokenKindString(kind TokenKind) string {
 		return "FALSE"
 	case NULL:
 		return "NULL"
+	case NEW:
+		return "NEW"
+	case THIS:
+		return "THIS"
+	case BASE:
+		return "BASE"
+	case IMPORT:
+		return "IMPORT"
+	case NAMESPACE:
+		return "NAMESPACE"
+	case USING:
+		return "USING"
+	case CLASS:
+		return "CLASS"
+	case STRUCT:
+		return "STRUCT"
+	case INTERFACE:
+		return "INTERFACE"
+	case ENUM:
+		return "ENUM"
+	case PUBLIC:
+		return "PUBLIC"
+	case PRIVATE:
+		return "PRIVATE"
+	case PROTECTED:
+		return "PROTECTED"
+	case INTERNAL:
+		return "INTERNAL"
+	case STATIC:
+		return "STATIC"
+	case CONST:
+		return "CONST"
+	case VOID:
+		return "VOID"
+	case VAR:
+		return "VAR"
+	case BOOL:
+		return "BOOL"
+	case CHAR:
+		return "CHAR"
 	case INT:
 		return "INT"
 	case FLOAT:
 		return "FLOAT"
+	case DOUBLE:
+		return "DOUBLE"
 	case STRING_TYPE:
 		return "STRING_TYPE"
-	case CHAR:
-		return "CHAR"
-	case BOOL:
-		return "BOOL"
-	case VOID:
-		return "VOID"
-	case STRUCT:
-		return "STRUCT"
-	case ENUM:
-		return "ENUM"
 	default:
 		return "default"
 	}

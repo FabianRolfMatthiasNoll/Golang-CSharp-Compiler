@@ -27,10 +27,6 @@ func (lex *lexer) push(token Token) {
 	lex.Tokens = append(lex.Tokens, token)
 }
 
-func (lex *lexer) at() byte {
-	return lex.source[lex.pos]
-}
-
 func (lex *lexer) remainder() string {
 	return lex.source[lex.pos:]
 }
@@ -47,7 +43,7 @@ func Tokenize(source string) []Token {
 		for _, pattern := range lex.patterns {
 			loc := pattern.regex.FindStringIndex(lex.remainder())
 
-			// Pattern must match current position or else its the wrong pattern to use
+			// Pattern must match current position or else it's the wrong pattern to use
 			// example: 10 + 5 must match the NUMBER pattern first before the PLUS pattern
 			if loc != nil && loc[0] == 0 {
 				matched = true
@@ -57,7 +53,7 @@ func Tokenize(source string) []Token {
 		}
 
 		if !matched {
-			panic(fmt.Sprintf("Lexer::Error -> unrecognized token at position %d near %s", lex.pos, lex.remainder()))
+			panic(fmt.Sprintf("Lexer::Error -> unrecognized token at position %d near '%s'", lex.pos, lex.remainder()))
 		}
 	}
 	lex.push(NewToken(EOF, "EOF"))
@@ -72,29 +68,40 @@ func createLexer(source string) *lexer {
 		patterns: []regexPattern{
 			// Definition of all patterns
 			// The Order is really important because the lexer will try to match the first pattern first
-			{regexp.MustCompile(`[0-9]+(\.[0-9]+)?`), numberHandler},
-			{regexp.MustCompile(`"[^"]*"`), stringHandler},
-			{regexp.MustCompile(`\/\/.*`), skipHandler}, // skip comments
-			{regexp.MustCompile(`\s+`), skipHandler},  // skip whitespace
-			{regexp.MustCompile(`\(`), defaultHandler(OPEN_PAREN, "(")},
-			{regexp.MustCompile(`\)`), defaultHandler(CLOSE_PAREN, ")")},
-			{regexp.MustCompile(`\{`), defaultHandler(OPEN_BRACE, "{")},
-			{regexp.MustCompile(`\}`), defaultHandler(CLOSE_BRACE, "}")},
-			{regexp.MustCompile(`\[`), defaultHandler(OPEN_BRACKET, "[")},
-			{regexp.MustCompile(`\]`), defaultHandler(CLOSE_BRACKET, "]")},
-			{regexp.MustCompile(`\==`), defaultHandler(EQUALS, "==")},
-			{regexp.MustCompile(`\=`), defaultHandler(ASSIGNMENT, "=")},
-			{regexp.MustCompile(`\!`), defaultHandler(NOT, "!")},
-			{regexp.MustCompile(`\+`), defaultHandler(PLUS, "+")},
-			{regexp.MustCompile(`\-`), defaultHandler(MINUS, "-")},
-			{regexp.MustCompile(`\*`), defaultHandler(MULTIPLY, "*")},
-			{regexp.MustCompile(`\/`), defaultHandler(DIVIDE, "/")},
-			{regexp.MustCompile(`\!=`), defaultHandler(NOT_EQUALS, "!=")},
-			{regexp.MustCompile(`\<\=`), defaultHandler(LESS_THAN_OR_EQUAL, "<=")},
-			{regexp.MustCompile(`\>\=`), defaultHandler(GREATER_THAN_OR_EQUAL, ">=")},
-			{regexp.MustCompile(`\<`), defaultHandler(LESS_THAN, "<")},
-			{regexp.MustCompile(`\>`), defaultHandler(GREATER_THAN, ">")},
-			{regexp.MustCompile(`\;`), defaultHandler(SEMICOLON, ";")},
+			{regexp.MustCompile(`^[0-9]+(\.[0-9]+)?`), numberHandler},
+			{regexp.MustCompile(`^"[^"]*"`), stringHandler},
+			{regexp.MustCompile(`^\/\/.*`), skipHandler}, // skip comments
+			{regexp.MustCompile(`^\s+`), skipHandler},    // skip whitespace
+			{regexp.MustCompile(`^\(`), defaultHandler(OPEN_PAREN, "(")},
+			{regexp.MustCompile(`^\)`), defaultHandler(CLOSE_PAREN, ")")},
+			{regexp.MustCompile(`^\{`), defaultHandler(OPEN_BRACE, "{")},
+			{regexp.MustCompile(`^\}`), defaultHandler(CLOSE_BRACE, "}")},
+			{regexp.MustCompile(`^\[`), defaultHandler(OPEN_BRACKET, "[")},
+			{regexp.MustCompile(`^\]`), defaultHandler(CLOSE_BRACKET, "]")},
+			{regexp.MustCompile(`^\==`), defaultHandler(EQUALS, "==")},
+			{regexp.MustCompile(`^\=`), defaultHandler(ASSIGNMENT, "=")},
+			{regexp.MustCompile(`^\!=`), defaultHandler(NOT_EQUALS, "!=")},
+			{regexp.MustCompile(`^\!`), defaultHandler(NOT, "!")},
+			{regexp.MustCompile(`^\<=`), defaultHandler(LESS_THAN_OR_EQUAL, "<=")},
+			{regexp.MustCompile(`^\>=`), defaultHandler(GREATER_THAN_OR_EQUAL, ">=")},
+			{regexp.MustCompile(`^\<`), defaultHandler(LESS_THAN, "<")},
+			{regexp.MustCompile(`^\>`), defaultHandler(GREATER_THAN, ">")},
+			{regexp.MustCompile(`^\+\=`), defaultHandler(PLUS_EQUALS, "+=")},
+			{regexp.MustCompile(`^\-\=`), defaultHandler(MINUS_EQUALS, "-=")},
+			{regexp.MustCompile(`^\*\=`), defaultHandler(MULTIPLY_EQUALS, "*=")},
+			{regexp.MustCompile(`^\/\=`), defaultHandler(DIVIDE_EQUALS, "/=")},
+			{regexp.MustCompile(`^\%\=`), defaultHandler(MODULUS_EQUALS, "%=")},
+			{regexp.MustCompile(`^\+`), defaultHandler(PLUS, "+")},
+			{regexp.MustCompile(`^\-`), defaultHandler(MINUS, "-")},
+			{regexp.MustCompile(`^\*`), defaultHandler(MULTIPLY, "*")},
+			{regexp.MustCompile(`^\/`), defaultHandler(DIVIDE, "/")},
+			{regexp.MustCompile(`^\%`), defaultHandler(MODULUS, "%")},
+			{regexp.MustCompile(`^\.`), defaultHandler(DOT, ".")},
+			{regexp.MustCompile(`^\;`), defaultHandler(SEMICOLON, ";")},
+			{regexp.MustCompile(`^\:`), defaultHandler(COLON, ":")},
+			{regexp.MustCompile(`^\,`), defaultHandler(COMMA, ",")},
+			{regexp.MustCompile(`^[a-zA-Z_][a-zA-Z0-9_]*`), identifierHandler},
+			// Keywords will be matched as identifiers and converted in the handler
 		},
 	}
 }
@@ -120,6 +127,17 @@ func skipHandler(lex *lexer, regex *regexp.Regexp) {
 
 func stringHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
+	match = match[1 : len(match)-1] // remove quotes
 	lex.push(NewToken(STRING, match))
+	lex.advanceN(len(match) + 2) // +2 for the quotes
+}
+
+func identifierHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindString(lex.remainder())
+	if kind, exists := keywords[match]; exists {
+		lex.push(NewToken(kind, match))
+	} else {
+		lex.push(NewToken(IDENTIFIER, match))
+	}
 	lex.advanceN(len(match))
 }
