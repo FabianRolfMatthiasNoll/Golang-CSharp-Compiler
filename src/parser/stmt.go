@@ -128,16 +128,16 @@ func parseClassMember(p *parser, className string) ast.ClassMember {
 	modifiers := parseModifiers(p)
 
 	if isType(p) {
-		return parseFieldOrMethod(p, modifiers, className)
+		return parseFieldOrMethod(p, modifiers)
 	} else if p.currentTokenKind() == lexer.IDENTIFIER && p.currentToken().Value == className {
 		// Possible constructor
-		return parseConstructor(p, modifiers, className)
+		return parseConstructor(p, modifiers)
 	}
 
 	panic(fmt.Sprintf("Expected type or constructor but got %s at line %d, column %d", lexer.TokenKindString(p.currentTokenKind()), p.currentToken().Line, p.currentToken().Column))
 }
 
-func parseFieldOrMethod(p *parser, modifiers []ast.Modifier, className string) ast.ClassMember {
+func parseFieldOrMethod(p *parser, modifiers []ast.Modifier) ast.ClassMember {
 	typ := parseType(p)
 	identifier := p.expectError(lexer.IDENTIFIER, "Expected identifier").Value
 
@@ -164,7 +164,7 @@ func parseFieldOrMethod(p *parser, modifiers []ast.Modifier, className string) a
 	}
 }
 
-func parseConstructor(p *parser, modifiers []ast.Modifier, className string) ast.ClassMember {
+func parseConstructor(p *parser, modifiers []ast.Modifier) ast.ClassMember {
 	name := p.expectError(lexer.IDENTIFIER, "Expected constructor name").Value
 	p.expect(lexer.OPEN_PAREN)
 	parameters := parseParameters(p)
