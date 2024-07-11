@@ -43,7 +43,7 @@ func parseModifiers(p *parser) []ast.Modifier {
 	}
 
 	if len(modifiers) == 0 {
-		modifiers = append(modifiers, ast.Modifier{Kind: lexer.PUBLIC})
+		modifiers = append(modifiers, ast.Modifier{Kind: lexer.PRIVATE})
 	}
 
 	return modifiers
