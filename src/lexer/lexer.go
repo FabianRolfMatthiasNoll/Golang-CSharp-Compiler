@@ -17,10 +17,20 @@ type lexer struct {
 	Tokens   []Token
 	source   string
 	pos      int
+	line     int
+	column   int
 }
 
 func (lex *lexer) advanceN(n int) {
-	lex.pos += n
+	for i := 0; i < n; i++ {
+		if lex.source[lex.pos] == '\n' {
+			lex.line++
+			lex.column = 0
+		} else {
+			lex.column++
+		}
+		lex.pos++
+	}
 }
 
 func (lex *lexer) push(token Token) {
@@ -53,10 +63,10 @@ func Tokenize(source string) []Token {
 		}
 
 		if !matched {
-			panic(fmt.Sprintf("Lexer::Error -> unrecognized token at position %d near '%s'", lex.pos, lex.remainder()))
+			panic(fmt.Sprintf("Lexer::Error -> unrecognized token at line %d, column %d near '%s'", lex.line, lex.column, lex.remainder()))
 		}
 	}
-	lex.push(NewToken(EOF, "EOF"))
+	lex.push(NewToken(EOF, "EOF", lex.line, lex.column))
 	return lex.Tokens
 }
 
@@ -64,6 +74,8 @@ func createLexer(source string) *lexer {
 	return &lexer{
 		source: source,
 		pos:    0,
+		line:   1,
+		column: 1,
 		Tokens: make([]Token, 0),
 		patterns: []regexPattern{
 			// Definition of all patterns
@@ -111,14 +123,14 @@ func createLexer(source string) *lexer {
 func defaultHandler(kind TokenKind, value string) regexHandler {
 	return func(lex *lexer, regex *regexp.Regexp) {
 		// Advance the lexers position past the end of the match
+		lex.push(NewToken(kind, value, lex.line, lex.column))
 		lex.advanceN(len(value))
-		lex.push(NewToken(kind, value))
 	}
 }
 
 func numberHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
-	lex.push(NewToken(NUMBER, match))
+	lex.push(NewToken(NUMBER, match, lex.line, lex.column))
 	lex.advanceN(len(match))
 }
 
@@ -130,16 +142,16 @@ func skipHandler(lex *lexer, regex *regexp.Regexp) {
 func stringHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
 	match = match[1 : len(match)-1] // remove quotes
-	lex.push(NewToken(STRING, match))
+	lex.push(NewToken(STRING, match, lex.line, lex.column))
 	lex.advanceN(len(match) + 2) // +2 for the quotes
 }
 
 func identifierHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
 	if kind, exists := keywords[match]; exists {
-		lex.push(NewToken(kind, match))
+		lex.push(NewToken(kind, match, lex.line, lex.column))
 	} else {
-		lex.push(NewToken(IDENTIFIER, match))
+		lex.push(NewToken(IDENTIFIER, match, lex.line, lex.column))
 	}
 	lex.advanceN(len(match))
 }

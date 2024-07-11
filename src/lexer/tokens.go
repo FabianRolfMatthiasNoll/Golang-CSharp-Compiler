@@ -10,14 +10,12 @@ const (
 	NUMBER
 	STRING
 	IDENTIFIER
-
-	OPEN_BRACKET  // [
-	CLOSE_BRACKET // ]
-	OPEN_PAREN    // (
-	CLOSE_PAREN   // )
-	OPEN_BRACE    // {
-	CLOSE_BRACE   // }
-
+	OPEN_BRACKET          // [
+	CLOSE_BRACKET         // ]
+	OPEN_PAREN            // (
+	CLOSE_PAREN           // )
+	OPEN_BRACE            // {
+	CLOSE_BRACE           // }
 	ASSIGNMENT            // =
 	EQUALS                // ==
 	NOT                   // !
@@ -26,30 +24,22 @@ const (
 	LESS_THAN_OR_EQUAL    // <=
 	GREATER_THAN          // >
 	GREATER_THAN_OR_EQUAL // >=
-
-	// Operators
-	PLUS     // +
-	MINUS    // -
-	MULTIPLY // *
-	DIVIDE   // /
-	MODULUS  // %
-
-	DOT       // .
-	SEMICOLON // ;
-	COMMA     // ,
-	COLON     // :
-
-	PLUS_EQUALS     // +=
-	MINUS_EQUALS    // -=
-	MULTIPLY_EQUALS // *=
-	DIVIDE_EQUALS   // /=
-	MODULUS_EQUALS  // %=
-
-	// Logical
-	AND // &&
-	OR  // ||
-
-	// Keywords
+	PLUS                  // +
+	MINUS                 // -
+	MULTIPLY              // *
+	DIVIDE                // /
+	MODULUS               // %
+	DOT                   // .
+	SEMICOLON             // ;
+	COMMA                 // ,
+	COLON                 // :
+	PLUS_EQUALS           // +=
+	MINUS_EQUALS          // -=
+	MULTIPLY_EQUALS       // *=
+	DIVIDE_EQUALS         // /=
+	MODULUS_EQUALS        // %=
+	AND                   // &&
+	OR                    // ||
 	IF
 	ELSE
 	FOR
@@ -75,6 +65,7 @@ const (
 	INTERFACE
 	ENUM
 	PUBLIC
+	FINAL
 	PRIVATE
 	PROTECTED
 	INTERNAL
@@ -104,6 +95,7 @@ var keywords = map[string]TokenKind{
 	"return":    RETURN,
 	"true":      TRUE,
 	"false":     FALSE,
+	"final":     FINAL,
 	"null":      NULL,
 	"new":       NEW,
 	"this":      THIS,
@@ -132,9 +124,17 @@ var keywords = map[string]TokenKind{
 }
 
 type Token struct {
-	// TODO: Keep track of line and column number
-	Kind  TokenKind
-	Value string
+	Kind   TokenKind
+	Value  string
+	Line   int
+	Column int
+}
+
+func (token Token) String() string {
+	if token.isOneOfMany(NUMBER, STRING, IDENTIFIER) {
+		return fmt.Sprintf("%s (%s) at %d:%d", TokenKindString(token.Kind), token.Value, token.Line, token.Column)
+	}
+	return fmt.Sprintf("%s at %d:%d", TokenKindString(token.Kind), token.Line, token.Column)
 }
 
 func (token Token) isOneOfMany(expectedTokens ...TokenKind) bool {
@@ -148,14 +148,14 @@ func (token Token) isOneOfMany(expectedTokens ...TokenKind) bool {
 
 func (token Token) Debug() {
 	if token.isOneOfMany(NUMBER, STRING, IDENTIFIER) {
-		fmt.Printf("%s (%s)\n", TokenKindString(token.Kind), token.Value)
+		fmt.Printf("%s (%s) at %d:%d\n", TokenKindString(token.Kind), token.Value, token.Line, token.Column)
 	} else {
-		fmt.Printf("%s ()\n", TokenKindString(token.Kind))
+		fmt.Printf("%s at %d:%d\n", TokenKindString(token.Kind), token.Line, token.Column)
 	}
 }
 
-func NewToken(kind TokenKind, value string) Token {
-	return Token{Kind: kind, Value: value}
+func NewToken(kind TokenKind, value string, line int, column int) Token {
+	return Token{Kind: kind, Value: value, Line: line, Column: column}
 }
 
 func TokenKindString(kind TokenKind) string {
@@ -304,6 +304,8 @@ func TokenKindString(kind TokenKind) string {
 		return "AND"
 	case OR:
 		return "OR"
+	case FINAL:
+		return "FINAL"
 	default:
 		return "default"
 	}
