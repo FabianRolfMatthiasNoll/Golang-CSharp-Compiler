@@ -1,17 +1,25 @@
 public class Example {
     public var number;
-    private string name = "Hello World";
+    private string name;
 
     public Example() {
         number = 0;
         name = "default";
     }
 
-    private void SetNumber(int newNumber) {
+    public void SetNumber(int newNumber) {
         number = newNumber;
     }
 
     void Test(int test) {
-      return test;
+        return test;
+    }
+
+    void ExampleMethod() {
+        this.SetNumber(42);
+        SetNumber(true);
+        HelloWorld(42 / (2 * 3));
+        this.member.foo.bar = 5;
     }
 }
+

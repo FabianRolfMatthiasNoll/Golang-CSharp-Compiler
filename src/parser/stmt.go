@@ -18,6 +18,9 @@ func parseStatement(p *parser) ast.Stmt {
 	}
 
 	expression := parseExpression(p, DEFAULT)
+	if idExpr, ok := expression.(ast.IdentifierExpr); ok && p.currentTokenKind() == lexer.OPEN_PAREN {
+		expression = parseMethodCallExpr(p, ast.ThisExpr{Line: idExpr.Line, Column: idExpr.Column}, idExpr.Name)
+	}
 	p.expect(lexer.SEMICOLON)
 
 	return ast.ExpressionStmt{
@@ -26,6 +29,7 @@ func parseStatement(p *parser) ast.Stmt {
 		Column:     p.currentToken().Column,
 	}
 }
+
 
 func parseReturnStmt(p *parser) ast.Stmt {
 	token := p.advance() // consume 'return'

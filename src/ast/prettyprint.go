@@ -28,6 +28,18 @@ func (expr IdentifierExpr) String() string {
 	return fmt.Sprintf("IdentifierExpr{Name: %s}", expr.Name)
 }
 
+func (expr ThisExpr) String() string {
+	return "ThisExpr{}"
+}
+
+func (expr BoolExpr) String() string {
+	return fmt.Sprintf("BoolExpr{Value: %t}", expr.Value)
+}
+
+func (expr NullExpr) String() string {
+	return "NullExpr{}"
+}
+
 func (expr BinaryExpr) String() string {
 	return fmt.Sprintf("BinaryExpr{\n  Left: %s,\n  Operator: %s,\n  Right: %s\n}",
 		indentString(fmt.Sprintf("%s", expr.Left), 1), expr.Operator, indentString(fmt.Sprintf("%s", expr.Right), 1))
@@ -40,6 +52,14 @@ func (expr PrefixExpr) String() string {
 func (expr AssignmentExpr) String() string {
 	return fmt.Sprintf("AssignmentExpr{\n  Assignee: %s,\n  Operator: %s,\n  Value: %s\n}",
 		indentString(fmt.Sprintf("%s", expr.Assigne), 1), expr.Operator, indentString(fmt.Sprintf("%s", expr.Value), 1))
+}
+
+func (expr MethodCallExpr) String() string {
+	return fmt.Sprintf("MethodCallExpr{\n  Receiver: %s,\n  MethodName: %s,\n  Arguments: %s\n}", indentString(fmt.Sprintf("%s", expr.Receiver), 1), expr.MethodName, indentString(fmt.Sprintf("%s", expr.Args), 1))
+}
+
+func (expr MemberAccessExpr) String() string {
+	return fmt.Sprintf("MemberAccessExpr{\n  Receiver: %s,\n  Member: %s\n}", indentString(fmt.Sprintf("%s", expr.Receiver), 1), expr.Member)
 }
 
 //=========================================================================================================
@@ -73,7 +93,7 @@ func (stmt ClassDeclStmt) String() string {
 		modifiers[i] = lexer.TokenKindString(mod.Kind)
 	}
 	return fmt.Sprintf("ClassDeclStmt{\n  Modifiers: [%s],\n  Name: %s,\n  Body: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Name, indentString(fmt.Sprintf("%s", stmt.Body), 1))
+		strings.Join(modifiers, ", "), stmt.Name, indentString(stmt.Body.String(), 1))
 }
 
 func (body ClassBody) String() string {
@@ -103,7 +123,7 @@ func (stmt MethodDeclStmt) String() string {
 		params[i] = fmt.Sprintf("%s %s", p.Type.Name, p.Identifier)
 	}
 	return fmt.Sprintf("MethodDeclStmt{\n  Modifiers: [%s],\n  ReturnType: %s,\n  Name: %s,\n  Parameters: [%s],\n  Body: %s\n}",
-		strings.Join(modifiers, ", "), stmt.ReturnType.Name, stmt.Name, strings.Join(params, ", "), indentString(fmt.Sprintf("%s", stmt.Body), 1))
+		strings.Join(modifiers, ", "), stmt.ReturnType.Name, stmt.Name, strings.Join(params, ", "), indentString(stmt.Body.String(), 1))
 }
 
 func (stmt ConstructorDeclStmt) String() string {
@@ -116,7 +136,7 @@ func (stmt ConstructorDeclStmt) String() string {
 		params[i] = fmt.Sprintf("%s %s", p.Type.Name, p.Identifier)
 	}
 	return fmt.Sprintf("ConstructorDeclStmt{\n  Modifiers: [%s],\n  Name: %s,\n  Parameters: [%s],\n  Body: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Name, strings.Join(params, ", "), indentString(fmt.Sprintf("%s", stmt.Body), 1))
+		strings.Join(modifiers, ", "), stmt.Name, strings.Join(params, ", "), indentString(stmt.Body.String(), 1))
 }
 
 func (stmt ReturnStmt) String() string {

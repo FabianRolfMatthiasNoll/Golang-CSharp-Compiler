@@ -82,8 +82,16 @@ func createTokenLookups() {
 	nud(lexer.NUMBER, parsePrimaryExpr)
 	nud(lexer.STRING, parsePrimaryExpr)
 	nud(lexer.IDENTIFIER, parsePrimaryExpr)
+	nud(lexer.NULL, parsePrimaryExpr)
+
 	nud(lexer.MINUS, parsePrefixExpr)
 	nud(lexer.OPEN_PAREN, parseGroupedExpr)
+	nud(lexer.THIS, parseThisExpr)
+	nud(lexer.TRUE, parseBooleanExpr)
+	nud(lexer.FALSE, parseBooleanExpr)
+
+	// Handle member access and method calls
+	led(lexer.DOT, MEMBER, parseMemberAccessOrMethodCall)
 
 	// Statements
 	stmt(lexer.VAR, parseVarDeclStmt)

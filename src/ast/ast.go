@@ -183,6 +183,34 @@ func (expr IdentifierExpr) expr()          {}
 func (expr IdentifierExpr) GetLine() int   { return expr.Line }
 func (expr IdentifierExpr) GetColumn() int { return expr.Column }
 
+type ThisExpr struct {
+	Line   int
+	Column int
+}
+
+func (expr ThisExpr) expr()          {}
+func (expr ThisExpr) GetLine() int   { return expr.Line }
+func (expr ThisExpr) GetColumn() int { return expr.Column }
+
+type BoolExpr struct {
+	Value  bool
+	Line   int
+	Column int
+}
+
+func (expr BoolExpr) expr()          {}
+func (expr BoolExpr) GetLine() int   { return expr.Line }
+func (expr BoolExpr) GetColumn() int { return expr.Column }
+
+type NullExpr struct {
+	Line   int
+	Column int
+}
+
+func (expr NullExpr) expr()          {}
+func (expr NullExpr) GetLine() int   { return expr.Line }
+func (expr NullExpr) GetColumn() int { return expr.Column }
+
 type BinaryExpr struct {
 	Left     Expr
 	Operator lexer.Token
@@ -217,3 +245,26 @@ type AssignmentExpr struct {
 func (expr AssignmentExpr) expr()          {}
 func (expr AssignmentExpr) GetLine() int   { return expr.Line }
 func (expr AssignmentExpr) GetColumn() int { return expr.Column }
+
+type MethodCallExpr struct {
+	Receiver   Expr
+	MethodName string
+	Args       []Expr
+	Line       int
+	Column     int
+}
+
+func (expr MethodCallExpr) expr()          {}
+func (expr MethodCallExpr) GetLine() int   { return expr.Line }
+func (expr MethodCallExpr) GetColumn() int { return expr.Column }
+
+type MemberAccessExpr struct {
+	Receiver Expr
+	Member   string
+	Line     int
+	Column   int
+}
+
+func (expr MemberAccessExpr) expr()          {}
+func (expr MemberAccessExpr) GetLine() int   { return expr.Line }
+func (expr MemberAccessExpr) GetColumn() int { return expr.Column }
