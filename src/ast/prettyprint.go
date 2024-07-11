@@ -51,7 +51,7 @@ func (expr PrefixExpr) String() string {
 
 func (expr AssignmentExpr) String() string {
 	return fmt.Sprintf("AssignmentExpr{\n  Assignee: %s,\n  Operator: %s,\n  Value: %s\n}",
-		indentString(fmt.Sprintf("%s", expr.Assigne), 1), expr.Operator, indentString(fmt.Sprintf("%s", expr.Value), 1))
+		indentString(fmt.Sprintf("%s", expr.Assignee), 1), expr.Operator, indentString(fmt.Sprintf("%s", expr.Value), 1))
 }
 
 func (expr MethodCallExpr) String() string {

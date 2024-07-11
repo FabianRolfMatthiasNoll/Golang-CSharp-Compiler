@@ -1,10 +1,15 @@
 public class Example {
     public var number;
     private string name;
+    Example instance = null;
 
-    public Example() {
+    Example() {
         number = 0;
         name = "default";
+    }
+
+    Example getInstance(){
+        return null;
     }
 
     public void SetNumber(int newNumber) {
@@ -20,6 +25,12 @@ public class Example {
         SetNumber(true);
         HelloWorld(42 / (2 * 3));
         this.member.foo.bar = 5;
+    }
+
+    void constructorTest(){
+      public int object = 4;
+      TestClass test;
+      int object;
     }
 }
 

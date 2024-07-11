@@ -17,6 +17,10 @@ func parseStatement(p *parser) ast.Stmt {
 		return parseReturnStmt(p)
 	}
 
+	if isType(p) {
+		return parseVarDeclStmt(p)
+	}
+
 	expression := parseExpression(p, DEFAULT)
 	if idExpr, ok := expression.(ast.IdentifierExpr); ok && p.currentTokenKind() == lexer.OPEN_PAREN {
 		expression = parseMethodCallExpr(p, ast.ThisExpr{Line: idExpr.Line, Column: idExpr.Column}, idExpr.Name)
@@ -29,7 +33,6 @@ func parseStatement(p *parser) ast.Stmt {
 		Column:     p.currentToken().Column,
 	}
 }
-
 
 func parseReturnStmt(p *parser) ast.Stmt {
 	token := p.advance() // consume 'return'
@@ -50,6 +53,11 @@ func parseReturnStmt(p *parser) ast.Stmt {
 
 func parseVarDeclStmt(p *parser) ast.Stmt {
 	modifiers := parseModifiers(p)
+
+	// Check if the current token is a type
+	if !isType(p) {
+		panic(fmt.Sprintf("Expected type but got %s at line %d, column %d", lexer.TokenKindString(p.currentTokenKind()), p.currentToken().Line, p.currentToken().Column))
+	}
 	dataType := parseType(p)
 
 	identifier := p.expectError(lexer.IDENTIFIER, "Expected identifier after type declaration").Value
@@ -72,40 +80,6 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 	}
 }
 
-func parseModifiers(p *parser) []ast.Modifier {
-	modifiers := []ast.Modifier{}
-
-	for isModifier(p.currentTokenKind()) {
-		modifiers = append(modifiers, ast.Modifier{Kind: p.advance().Kind})
-	}
-
-	if len(modifiers) == 0 {
-		modifiers = append(modifiers, ast.Modifier{Kind: lexer.PUBLIC})
-	}
-
-	return modifiers
-}
-
-func parseType(p *parser) ast.Type {
-	return ast.Type{Name: p.advance().Value}
-}
-
-func isModifier(kind lexer.TokenKind) bool {
-	switch kind {
-	case lexer.PUBLIC, lexer.PRIVATE, lexer.PROTECTED, lexer.STATIC, lexer.FINAL:
-		return true
-	}
-	return false
-}
-
-func isType(kind lexer.TokenKind) bool {
-	switch kind {
-	case lexer.INT, lexer.STRING_TYPE, lexer.FLOAT, lexer.BOOL, lexer.VAR, lexer.CHAR, lexer.DOUBLE, lexer.VOID:
-		return true
-	}
-	return false
-}
-
 func parseClassDeclStmt(p *parser) ast.Stmt {
 	modifiers := parseModifiers(p)
 	p.expect(lexer.CLASS)
@@ -114,7 +88,7 @@ func parseClassDeclStmt(p *parser) ast.Stmt {
 	members := []ast.ClassMember{}
 
 	for p.currentTokenKind() != lexer.CLOSE_BRACE {
-		members = append(members, parseClassMember(p))
+		members = append(members, parseClassMember(p, className))
 	}
 
 	p.expect(lexer.CLOSE_BRACE)
@@ -150,41 +124,61 @@ func parseClassDeclStmt(p *parser) ast.Stmt {
 	}
 }
 
-func parseClassMember(p *parser) ast.ClassMember {
+func parseClassMember(p *parser, className string) ast.ClassMember {
 	modifiers := parseModifiers(p)
 
-	if isType(p.currentTokenKind()) {
-		typ := parseType(p)
-		identifier := p.expectError(lexer.IDENTIFIER, "Expected identifier").Value
+	if isType(p) {
+		return parseFieldOrMethod(p, modifiers, className)
+	} else if p.currentTokenKind() == lexer.IDENTIFIER && p.currentToken().Value == className {
+		// Possible constructor
+		return parseConstructor(p, modifiers, className)
+	}
 
-		if p.currentTokenKind() == lexer.OPEN_PAREN {
-			// It's a method
-			return parseMethod(p, modifiers, typ, identifier)
-		} else {
-			// It's a field
-			var value ast.Expr
-			if p.currentTokenKind() == lexer.ASSIGNMENT {
-				p.advance() // consume '='
-				value = parseExpression(p, ASSIGNMENT)
-			}
+	panic(fmt.Sprintf("Expected type or constructor but got %s at line %d, column %d", lexer.TokenKindString(p.currentTokenKind()), p.currentToken().Line, p.currentToken().Column))
+}
 
-			p.expect(lexer.SEMICOLON)
-			return ast.FieldDeclStmt{
-				Modifiers:  modifiers,
-				Type:       typ,
-				Identifier: identifier,
-				Value:      value,
-				Line:       p.currentToken().Line,
-				Column:     p.currentToken().Column,
-			}
+func parseFieldOrMethod(p *parser, modifiers []ast.Modifier, className string) ast.ClassMember {
+	typ := parseType(p)
+	identifier := p.expectError(lexer.IDENTIFIER, "Expected identifier").Value
+
+	if p.currentTokenKind() == lexer.OPEN_PAREN {
+		// It's a method
+		return parseMethod(p, modifiers, typ, identifier)
+	} else {
+		// It's a field
+		var value ast.Expr
+		if p.currentTokenKind() == lexer.ASSIGNMENT {
+			p.advance() // consume '='
+			value = parseExpression(p, ASSIGNMENT)
+		}
+
+		p.expect(lexer.SEMICOLON)
+		return ast.FieldDeclStmt{
+			Modifiers:  modifiers,
+			Type:       typ,
+			Identifier: identifier,
+			Value:      value,
+			Line:       p.currentToken().Line,
+			Column:     p.currentToken().Column,
 		}
 	}
+}
 
-	if p.currentTokenKind() == lexer.IDENTIFIER {
-		return parseConstructor(p, modifiers)
+func parseConstructor(p *parser, modifiers []ast.Modifier, className string) ast.ClassMember {
+	name := p.expectError(lexer.IDENTIFIER, "Expected constructor name").Value
+	p.expect(lexer.OPEN_PAREN)
+	parameters := parseParameters(p)
+	p.expect(lexer.CLOSE_PAREN)
+	body := parseBlockStmt(p)
+
+	return ast.ConstructorDeclStmt{
+		Modifiers:  modifiers,
+		Name:       name,
+		Parameters: parameters,
+		Body:       body,
+		Line:       p.currentToken().Line,
+		Column:     p.currentToken().Column,
 	}
-
-	panic(fmt.Sprintf("Unexpected token in class body: %s at line %d, column %d", lexer.TokenKindString(p.currentTokenKind()), p.currentToken().Line, p.currentToken().Column))
 }
 
 func parseMethod(p *parser, modifiers []ast.Modifier, returnType ast.Type, name string) ast.ClassMember {
@@ -196,23 +190,6 @@ func parseMethod(p *parser, modifiers []ast.Modifier, returnType ast.Type, name 
 	return ast.MethodDeclStmt{
 		Modifiers:  modifiers,
 		ReturnType: returnType,
-		Name:       name,
-		Parameters: parameters,
-		Body:       body,
-		Line:       p.currentToken().Line,
-		Column:     p.currentToken().Column,
-	}
-}
-
-func parseConstructor(p *parser, modifiers []ast.Modifier) ast.ClassMember {
-	name := p.expectError(lexer.IDENTIFIER, "Expected constructor name").Value
-	p.expect(lexer.OPEN_PAREN)
-	parameters := parseParameters(p)
-	p.expect(lexer.CLOSE_PAREN)
-	body := parseBlockStmt(p)
-
-	return ast.ConstructorDeclStmt{
-		Modifiers:  modifiers,
 		Name:       name,
 		Parameters: parameters,
 		Body:       body,

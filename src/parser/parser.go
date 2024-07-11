@@ -8,7 +8,6 @@ import (
 )
 
 type parser struct {
-	// TODO: Add a field for errors to keep parsing in the future
 	tokens []lexer.Token
 	pos    int
 }
@@ -71,4 +70,11 @@ func (p *parser) expectError(expectedKind lexer.TokenKind, err any) lexer.Token 
 
 func (p *parser) expect(expectedKind lexer.TokenKind) lexer.Token {
 	return p.expectError(expectedKind, nil)
+}
+
+func (p *parser) nextTokenKind() lexer.TokenKind {
+	if p.pos+1 < len(p.tokens) {
+		return p.tokens[p.pos+1].Kind
+	}
+	return lexer.EOF
 }

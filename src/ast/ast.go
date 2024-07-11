@@ -22,6 +22,8 @@ type Modifier struct {
 
 type Type struct {
 	Name string
+	Line int
+	Column int
 }
 
 // Program
@@ -235,7 +237,7 @@ func (expr PrefixExpr) GetLine() int   { return expr.Line }
 func (expr PrefixExpr) GetColumn() int { return expr.Column }
 
 type AssignmentExpr struct {
-	Assigne  Expr
+	Assignee  Expr
 	Operator lexer.Token
 	Value    Expr
 	Line     int

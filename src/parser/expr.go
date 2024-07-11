@@ -9,7 +9,6 @@ import (
 )
 
 func parseExpression(p *parser, bp bindingPower) ast.Expr {
-	// Lookup if a function exists for the current token kind
 	tokenKind := p.currentTokenKind()
 	nud_fn, exists := nudTable[tokenKind]
 
@@ -19,8 +18,6 @@ func parseExpression(p *parser, bp bindingPower) ast.Expr {
 
 	left := nud_fn(p)
 
-	// While we have a LED and current BP is < BP of current token
-	// continue parsing to the right side
 	for bpTable[p.currentTokenKind()] > bp {
 		tokenKind = p.currentTokenKind()
 		led_fn, exists := ledTable[tokenKind]
@@ -49,7 +46,7 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			return parseMethodCallExpr(p, ast.ThisExpr{Line: token.Line, Column: token.Column}, token.Value)
 		}
 		for p.currentTokenKind() == lexer.DOT {
-			p.advance() // consume the dot
+			p.advance()
 			member := p.expect(lexer.IDENTIFIER).Value
 			if p.currentTokenKind() == lexer.OPEN_PAREN {
 				return parseMethodCallExpr(p, expr, member)
@@ -62,6 +59,7 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			}
 		}
 		return expr
+	
 	default:
 		panic(fmt.Sprintf("Cannot create primary expression from token %s\n", lexer.TokenKindString(p.currentTokenKind())))
 	}
@@ -84,11 +82,11 @@ func parsePrefixExpr(p *parser) ast.Expr {
 func parseAssignmentExpr(p *parser, left ast.Expr, bp bindingPower) ast.Expr {
 	operatorToken := p.advance()
 	value := parseExpression(p, bp)
-	return ast.AssignmentExpr{Assigne: left, Operator: operatorToken, Value: value}
+	return ast.AssignmentExpr{Assignee: left, Operator: operatorToken, Value: value}
 }
 
 func parseGroupedExpr(p *parser) ast.Expr {
-	p.advance() // Consume left parenthesis
+	p.advance()
 	expr := parseExpression(p, DEFAULT)
 	p.expectError(lexer.CLOSE_PAREN, "Expected closing parenthesis")
 
@@ -146,7 +144,7 @@ func parseThisExpr(p *parser) ast.Expr {
 	token := p.advance()
 	var expr ast.Expr = ast.ThisExpr{Line: token.Line, Column: token.Column}
 	for p.currentTokenKind() == lexer.DOT {
-		p.advance() // consume the dot
+		p.advance()
 		member := p.expect(lexer.IDENTIFIER).Value
 		if p.currentTokenKind() == lexer.OPEN_PAREN {
 			return parseMethodCallExpr(p, expr, member)
@@ -167,4 +165,9 @@ func parseThisExpr(p *parser) ast.Expr {
 func parseBooleanExpr(p *parser) ast.Expr {
 	tokenValue := p.advance().Value
 	return ast.BoolExpr{Value: tokenValue == "true", Line: p.currentToken().Line, Column: p.currentToken().Column}
+}
+
+func parseNullExpr(p *parser) ast.Expr {
+	token := p.advance()
+	return ast.NullExpr{Line: token.Line, Column: token.Column}
 }
