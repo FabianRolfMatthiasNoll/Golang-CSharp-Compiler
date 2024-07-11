@@ -115,6 +115,28 @@ func parseClassDeclStmt(p *parser) ast.Stmt {
 
 	p.expect(lexer.CLOSE_BRACE)
 
+	// Check if a constructor declaration exists
+	hasConstructor := false
+	for _, member := range members {
+		if _, ok := member.(ast.ConstructorDeclStmt); ok {
+			hasConstructor = true
+			break
+		}
+	}
+
+	// Add a standard constructor if no constructor declaration exists
+	if !hasConstructor {
+		standardConstructor := ast.ConstructorDeclStmt{
+			Modifiers:  modifiers,
+			Name:       className,
+			Parameters: []ast.Parameter{},
+			Body:       ast.BlockStmt{Body: []ast.Stmt{}},
+			Line:       p.currentToken().Line,
+			Column:     p.currentToken().Column,
+		}
+		members = append(members, standardConstructor)
+	}
+
 	return ast.ClassDeclStmt{
 		Modifiers: modifiers,
 		Name:      className,
