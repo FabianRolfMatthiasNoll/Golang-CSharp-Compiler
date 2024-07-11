@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	bytes, _ := os.ReadFile("./examples/baseClassFile.lang")
+	bytes, _ := os.ReadFile("./examples/constructorCall.lang")
 
 	tokens := lexer.Tokenize(string(bytes))
 

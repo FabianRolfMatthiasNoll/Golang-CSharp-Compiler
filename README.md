@@ -15,7 +15,7 @@
 - keep line and column number of tokens for error messages
 - name resolution aka this.number or foo.bar()
 - method calls
-- differntiation between fiel, method or constructor
+- differentiation between field, method or constructor
 
 ## to be implemented
 

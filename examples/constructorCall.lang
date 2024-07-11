@@ -1,0 +1,10 @@
+public class ConstructorCall{
+
+    ConstructorCall(int age){
+        age += 10;
+    }
+
+    void Main(){
+        ConstructorCall instance = new ConstructorCall();
+    }
+}
