@@ -75,6 +75,10 @@ func parseModifiers(p *parser) []ast.Modifier {
 		modifiers = append(modifiers, ast.Modifier{Kind: p.advance().Kind})
 	}
 
+	if len(modifiers) == 0 {
+		modifiers = append(modifiers, ast.Modifier{Kind: lexer.PUBLIC})
+	}
+
 	return modifiers
 }
 
