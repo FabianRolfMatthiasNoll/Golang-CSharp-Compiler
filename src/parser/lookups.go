@@ -87,4 +87,11 @@ func createTokenLookups() {
 
 	// Statements
 	stmt(lexer.VAR, parseVarDeclStmt)
+	stmt(lexer.PUBLIC, parseVarDeclStmt)
+	stmt(lexer.PRIVATE, parseVarDeclStmt)
+	stmt(lexer.PROTECTED, parseVarDeclStmt)
+	stmt(lexer.STATIC, parseVarDeclStmt)
+	stmt(lexer.FINAL, parseVarDeclStmt)
+	stmt(lexer.CLASS, parseClassDeclStmt)
+	stmt(lexer.RETURN, parseReturnStmt)
 }

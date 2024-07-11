@@ -1,11 +1,17 @@
-class Car 
-{
-  string color = "red";
+public class Example {
+    public var number;
+    private string name = "Hello World";
 
-  static void Main(string[] args)
-  {
-    if("hello" == test && "Bye" != test)
-    Car myObj = new Car();
-    Console.WriteLine(myObj.color);
-  }
+    public Example() {
+        number = 0;
+        name = "default";
+    }
+
+    public void SetNumber(int newNumber) {
+        number = newNumber;
+    }
+
+    void Test(int test) {
+      return test;
+    }
 }

@@ -1,6 +1,8 @@
 package parser
 
 import (
+	"fmt"
+
 	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/ast"
 	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/lexer"
 )
@@ -16,15 +18,20 @@ func createParser(tokenstream []lexer.Token) *parser {
 	return &parser{tokenstream, 0}
 }
 
-func Parse(tokenstream []lexer.Token) ast.BlockStmt {
-	Body := make([]ast.Stmt, 0)
+func Parse(tokenstream []lexer.Token) ast.Program {
+	classes := make([]ast.ClassDeclStmt, 0)
 	p := createParser(tokenstream)
 
 	for p.hasTokensLeft() {
-		Body = append(Body, parseStatement(p))
+		classStmt := parseClassDeclStmt(p)
+		if class, ok := classStmt.(ast.ClassDeclStmt); ok {
+			classes = append(classes, class)
+		} else {
+			panic(fmt.Sprintf("Expected ClassDeclStmt but got %T", classStmt))
+		}
 	}
 
-	return ast.BlockStmt{Body: Body}
+	return ast.Program{Classes: classes}
 }
 
 // HELPER METHODS
@@ -49,12 +56,13 @@ func (p *parser) hasTokensLeft() bool {
 
 func (p *parser) expectError(expectedKind lexer.TokenKind, err any) lexer.Token {
 	kind := p.currentTokenKind()
+	token := p.currentToken()
 
 	if kind != expectedKind {
 		if err == nil {
-			panic("Expected " + lexer.TokenKindString(expectedKind) + " but got " + lexer.TokenKindString(kind))
+			panic(fmt.Sprintf("Expected %s but got %s at line %d, column %d", lexer.TokenKindString(expectedKind), lexer.TokenKindString(kind), token.Line, token.Column))
 		} else {
-			panic(err)
+			panic(fmt.Sprintf("%v at line %d, column %d", err, token.Line, token.Column))
 		}
 	}
 
@@ -64,4 +72,3 @@ func (p *parser) expectError(expectedKind lexer.TokenKind, err any) lexer.Token 
 func (p *parser) expect(expectedKind lexer.TokenKind) lexer.Token {
 	return p.expectError(expectedKind, nil)
 }
-
