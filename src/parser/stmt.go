@@ -8,7 +8,7 @@ import (
 func parseStatement(p *parser) ast.Stmt {
 	stmt_fn, exists := stmtTable[p.currentTokenKind()]
 	if exists {
-		stmt_fn(p)
+		return stmt_fn(p)
 	}
 
 	expression := parseExpression(p, DEFAULT)
