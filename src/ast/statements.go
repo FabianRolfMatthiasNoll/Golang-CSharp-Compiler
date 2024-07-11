@@ -1,5 +1,7 @@
 package ast
 
+import "github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/lexer"
+
 type BlockStmt struct {
 	Body []Stmt
 }
@@ -12,3 +14,12 @@ type ExpressionStmt struct {
 }
 
 func (stmt ExpressionStmt) stmt() {}
+
+type VarDeclStmt struct {
+	Identifier string
+	Value      Expr
+	Modifier   lexer.TokenKind
+	Type       lexer.TokenKind
+}
+
+func (stmt VarDeclStmt) stmt() {}

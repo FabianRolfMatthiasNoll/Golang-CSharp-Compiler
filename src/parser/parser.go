@@ -37,11 +37,6 @@ func (p *parser) currentTokenKind() lexer.TokenKind {
 	return p.tokens[p.pos].Kind
 }
 
-// func (p *parser) nextToken() lexer.Token {
-// 	p.pos++
-// 	return p.tokens[p.pos]
-// }
-
 func (p *parser) advance() lexer.Token {
 	tk := p.currentToken()
 	p.pos++
@@ -69,3 +64,4 @@ func (p *parser) expectError(expectedKind lexer.TokenKind, err any) lexer.Token 
 func (p *parser) expect(expectedKind lexer.TokenKind) lexer.Token {
 	return p.expectError(expectedKind, nil)
 }
+

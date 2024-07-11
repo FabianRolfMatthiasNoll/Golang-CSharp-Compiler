@@ -40,17 +40,23 @@ func led(kind lexer.TokenKind, bp bindingPower, led_fn ledHandler) {
 	bpTable[kind] = bp
 }
 
-func nud(kind lexer.TokenKind, bp bindingPower, nud_fn nudHandler) {
+func nud(kind lexer.TokenKind, nud_fn nudHandler) {
 	nudTable[kind] = nud_fn
-	bpTable[kind] = bp
 }
 
-func stmt(kind lexer.TokenKind, bp bindingPower, stmt_fn stmtHandler) {
+func stmt(kind lexer.TokenKind, stmt_fn stmtHandler) {
 	stmtTable[kind] = stmt_fn
-	bpTable[kind] = bp
+	bpTable[kind] = DEFAULT
 }
 
 func createTokenLookups() {
+
+	led(lexer.ASSIGNMENT, ASSIGNMENT, parseAssignmentExpr)
+	led(lexer.PLUS_EQUALS, ASSIGNMENT, parseAssignmentExpr)
+	led(lexer.MINUS_EQUALS, ASSIGNMENT, parseAssignmentExpr)
+	led(lexer.MULTIPLY_EQUALS, ASSIGNMENT, parseAssignmentExpr)
+	led(lexer.DIVIDE_EQUALS, ASSIGNMENT, parseAssignmentExpr)
+	led(lexer.MODULUS_EQUALS, ASSIGNMENT, parseAssignmentExpr)
 
 	// Logical
 	led(lexer.AND, LOGICAL, parseBinaryExpr)
@@ -73,7 +79,12 @@ func createTokenLookups() {
 	led(lexer.MODULUS, MULTIPLICATIVE, parseBinaryExpr)
 
 	// Literals & Symbols
-	nud(lexer.NUMBER, PRIMARY, parsePrimaryExpr)
-	nud(lexer.STRING, PRIMARY, parsePrimaryExpr)
-	nud(lexer.IDENTIFIER, PRIMARY, parsePrimaryExpr)
+	nud(lexer.NUMBER, parsePrimaryExpr)
+	nud(lexer.STRING, parsePrimaryExpr)
+	nud(lexer.IDENTIFIER, parsePrimaryExpr)
+	nud(lexer.MINUS, parsePrefixExpr)
+	nud(lexer.OPEN_PAREN, parseGroupedExpr)
+
+	// Statements
+	stmt(lexer.VAR, parseVarDeclStmt)
 }

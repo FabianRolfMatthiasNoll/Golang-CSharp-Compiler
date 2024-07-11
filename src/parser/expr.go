@@ -21,7 +21,7 @@ func parseExpression(p *parser, bp bindingPower) ast.Expr {
 
 	// While we have a LED and current BP is < BP of current token
 	// continue parsing to the right side
-	for bp < bpTable[p.currentTokenKind()] {
+	for bpTable[p.currentTokenKind()] > bp {
 		tokenKind = p.currentTokenKind()
 		led_fn, exists := ledTable[tokenKind]
 
@@ -54,4 +54,25 @@ func parseBinaryExpr(p *parser, left ast.Expr, bp bindingPower) ast.Expr {
 	right := parseExpression(p, bp)
 
 	return ast.BinaryExpr{Left: left, Operator: operatorToken, Right: right}
+}
+
+func parsePrefixExpr(p *parser) ast.Expr {
+	operatorToken := p.advance()
+	expression := parseExpression(p, DEFAULT)
+
+	return ast.PrefixExpr{Operator: operatorToken, Expression: expression}
+}
+
+func parseAssignmentExpr(p *parser, left ast.Expr, bp bindingPower) ast.Expr {
+	operatorToken := p.advance()
+	value := parseExpression(p, bp)
+	return ast.AssignmentExpr{Assigne: left, Operator: operatorToken, Value: value}
+}
+
+func parseGroupedExpr(p *parser) ast.Expr {
+	p.advance() // Consume left parenthesis
+	expr := parseExpression(p, DEFAULT)
+	p.expectError(lexer.CLOSE_PAREN, "Expected closing parenthesis")
+
+	return expr
 }
