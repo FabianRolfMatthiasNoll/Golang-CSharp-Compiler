@@ -29,15 +29,18 @@ type Program struct {
 	Classes []ClassDeclStmt
 }
 
+// ========================================================================================================
 // Statements
+// ========================================================================================================
+
 type BlockStmt struct {
 	Body   []Stmt
 	Line   int
 	Column int
 }
 
-func (stmt BlockStmt) stmt() {}
-func (stmt BlockStmt) GetLine() int { return stmt.Line }
+func (stmt BlockStmt) stmt()          {}
+func (stmt BlockStmt) GetLine() int   { return stmt.Line }
 func (stmt BlockStmt) GetColumn() int { return stmt.Column }
 
 type ExpressionStmt struct {
@@ -46,8 +49,8 @@ type ExpressionStmt struct {
 	Column     int
 }
 
-func (stmt ExpressionStmt) stmt() {}
-func (stmt ExpressionStmt) GetLine() int { return stmt.Line }
+func (stmt ExpressionStmt) stmt()          {}
+func (stmt ExpressionStmt) GetLine() int   { return stmt.Line }
 func (stmt ExpressionStmt) GetColumn() int { return stmt.Column }
 
 type VarDeclStmt struct {
@@ -59,8 +62,8 @@ type VarDeclStmt struct {
 	Column     int
 }
 
-func (stmt VarDeclStmt) stmt() {}
-func (stmt VarDeclStmt) GetLine() int { return stmt.Line }
+func (stmt VarDeclStmt) stmt()          {}
+func (stmt VarDeclStmt) GetLine() int   { return stmt.Line }
 func (stmt VarDeclStmt) GetColumn() int { return stmt.Column }
 
 type ReturnStmt struct {
@@ -69,8 +72,8 @@ type ReturnStmt struct {
 	Column int
 }
 
-func (stmt ReturnStmt) stmt() {}
-func (stmt ReturnStmt) GetLine() int { return stmt.Line }
+func (stmt ReturnStmt) stmt()          {}
+func (stmt ReturnStmt) GetLine() int   { return stmt.Line }
 func (stmt ReturnStmt) GetColumn() int { return stmt.Column }
 
 // Class-related statements
@@ -82,8 +85,8 @@ type ClassDeclStmt struct {
 	Column    int
 }
 
-func (stmt ClassDeclStmt) stmt() {}
-func (stmt ClassDeclStmt) GetLine() int { return stmt.Line }
+func (stmt ClassDeclStmt) stmt()          {}
+func (stmt ClassDeclStmt) GetLine() int   { return stmt.Line }
 func (stmt ClassDeclStmt) GetColumn() int { return stmt.Column }
 
 type ClassBody struct {
@@ -92,7 +95,7 @@ type ClassBody struct {
 	Column  int
 }
 
-func (body ClassBody) GetLine() int { return body.Line }
+func (body ClassBody) GetLine() int   { return body.Line }
 func (body ClassBody) GetColumn() int { return body.Column }
 
 type ClassMember interface {
@@ -110,8 +113,8 @@ type FieldDeclStmt struct {
 	Column     int
 }
 
-func (stmt FieldDeclStmt) classMember() {}
-func (stmt FieldDeclStmt) GetLine() int { return stmt.Line }
+func (stmt FieldDeclStmt) classMember()   {}
+func (stmt FieldDeclStmt) GetLine() int   { return stmt.Line }
 func (stmt FieldDeclStmt) GetColumn() int { return stmt.Column }
 
 type MethodDeclStmt struct {
@@ -124,8 +127,8 @@ type MethodDeclStmt struct {
 	Column     int
 }
 
-func (stmt MethodDeclStmt) classMember() {}
-func (stmt MethodDeclStmt) GetLine() int { return stmt.Line }
+func (stmt MethodDeclStmt) classMember()   {}
+func (stmt MethodDeclStmt) GetLine() int   { return stmt.Line }
 func (stmt MethodDeclStmt) GetColumn() int { return stmt.Column }
 
 type ConstructorDeclStmt struct {
@@ -137,8 +140,8 @@ type ConstructorDeclStmt struct {
 	Column     int
 }
 
-func (stmt ConstructorDeclStmt) classMember() {}
-func (stmt ConstructorDeclStmt) GetLine() int { return stmt.Line }
+func (stmt ConstructorDeclStmt) classMember()   {}
+func (stmt ConstructorDeclStmt) GetLine() int   { return stmt.Line }
 func (stmt ConstructorDeclStmt) GetColumn() int { return stmt.Column }
 
 type Parameter struct {
@@ -146,15 +149,18 @@ type Parameter struct {
 	Identifier string
 }
 
+// ========================================================================================================
 // Expressions
+// ========================================================================================================
+
 type NumberExpr struct {
 	Value  float64
 	Line   int
 	Column int
 }
 
-func (expr NumberExpr) expr() {}
-func (expr NumberExpr) GetLine() int { return expr.Line }
+func (expr NumberExpr) expr()          {}
+func (expr NumberExpr) GetLine() int   { return expr.Line }
 func (expr NumberExpr) GetColumn() int { return expr.Column }
 
 type StringExpr struct {
@@ -163,8 +169,8 @@ type StringExpr struct {
 	Column int
 }
 
-func (expr StringExpr) expr() {}
-func (expr StringExpr) GetLine() int { return expr.Line }
+func (expr StringExpr) expr()          {}
+func (expr StringExpr) GetLine() int   { return expr.Line }
 func (expr StringExpr) GetColumn() int { return expr.Column }
 
 type IdentifierExpr struct {
@@ -173,8 +179,8 @@ type IdentifierExpr struct {
 	Column int
 }
 
-func (expr IdentifierExpr) expr() {}
-func (expr IdentifierExpr) GetLine() int { return expr.Line }
+func (expr IdentifierExpr) expr()          {}
+func (expr IdentifierExpr) GetLine() int   { return expr.Line }
 func (expr IdentifierExpr) GetColumn() int { return expr.Column }
 
 type BinaryExpr struct {
@@ -185,19 +191,19 @@ type BinaryExpr struct {
 	Column   int
 }
 
-func (expr BinaryExpr) expr() {}
-func (expr BinaryExpr) GetLine() int { return expr.Line }
+func (expr BinaryExpr) expr()          {}
+func (expr BinaryExpr) GetLine() int   { return expr.Line }
 func (expr BinaryExpr) GetColumn() int { return expr.Column }
 
 type PrefixExpr struct {
-	Operator    lexer.Token
-	Expression  Expr
-	Line        int
-	Column      int
+	Operator   lexer.Token
+	Expression Expr
+	Line       int
+	Column     int
 }
 
-func (expr PrefixExpr) expr() {}
-func (expr PrefixExpr) GetLine() int { return expr.Line }
+func (expr PrefixExpr) expr()          {}
+func (expr PrefixExpr) GetLine() int   { return expr.Line }
 func (expr PrefixExpr) GetColumn() int { return expr.Column }
 
 type AssignmentExpr struct {
@@ -208,6 +214,6 @@ type AssignmentExpr struct {
 	Column   int
 }
 
-func (expr AssignmentExpr) expr() {}
-func (expr AssignmentExpr) GetLine() int { return expr.Line }
+func (expr AssignmentExpr) expr()          {}
+func (expr AssignmentExpr) GetLine() int   { return expr.Line }
 func (expr AssignmentExpr) GetColumn() int { return expr.Column }

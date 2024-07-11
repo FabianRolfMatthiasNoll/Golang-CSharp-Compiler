@@ -7,7 +7,7 @@ public class Example {
         name = "default";
     }
 
-    public void SetNumber(int newNumber) {
+    private void SetNumber(int newNumber) {
         number = newNumber;
     }
 
