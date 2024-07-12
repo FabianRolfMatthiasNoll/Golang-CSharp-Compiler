@@ -93,6 +93,9 @@ func createTokenLookups() {
 	led(lexer.DOT, MEMBER, parseMemberAccessOrMethodCall)
 	nud(lexer.NEW, parseConstructorCallExpr)
 
+	nud(lexer.INCREMENT, parseUnaryExpr)
+	nud(lexer.DECREMENT, parseUnaryExpr)
+
 	// Statements
 	stmt(lexer.VAR, parseVarDeclStmt)
 	stmt(lexer.INT, parseVarDeclStmt)

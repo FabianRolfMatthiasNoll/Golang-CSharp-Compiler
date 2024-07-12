@@ -103,6 +103,8 @@ func createLexer(source string) *lexer {
 			{regexp.MustCompile(`^\*\=`), defaultHandler(MULTIPLY_EQUALS, "*=")},
 			{regexp.MustCompile(`^\/\=`), defaultHandler(DIVIDE_EQUALS, "/=")},
 			{regexp.MustCompile(`^\%\=`), defaultHandler(MODULUS_EQUALS, "%=")},
+			{regexp.MustCompile(`^\+\+`), defaultHandler(INCREMENT, "++")},
+			{regexp.MustCompile(`^\-\-`), defaultHandler(DECREMENT, "--")},
 			{regexp.MustCompile(`^\+`), defaultHandler(PLUS, "+")},
 			{regexp.MustCompile(`^\-`), defaultHandler(MINUS, "-")},
 			{regexp.MustCompile(`^\*`), defaultHandler(MULTIPLY, "*")},

@@ -69,6 +69,8 @@ const (
 	PRIVATE
 	PROTECTED
 	INTERNAL
+	INCREMENT
+	DECREMENT
 	STATIC
 	CONST
 	VOID
@@ -306,6 +308,10 @@ func TokenKindString(kind TokenKind) string {
 		return "OR"
 	case FINAL:
 		return "FINAL"
+	case INCREMENT:
+		return "INCREMENT"
+	case DECREMENT:
+		return "DECREMENT"
 	default:
 		return "default"
 	}

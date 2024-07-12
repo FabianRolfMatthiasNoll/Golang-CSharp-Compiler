@@ -17,6 +17,7 @@
 - method calls
 - differentiation between field, method or constructor
 - constructor calls
+- Post/Pre increment/decrement
 
 ## to be implemented
 
@@ -27,7 +28,7 @@
 - swicht case
 - break, continue
 - getter and setter members
-- Post/Pre increment/decrement
+
 
 => Then TypeCheck , Bytecode etc.
 This should be enough implementation to make a full compiler for a really basic c# language which can then be extended on

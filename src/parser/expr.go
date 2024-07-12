@@ -45,6 +45,13 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 		if p.currentTokenKind() == lexer.OPEN_PAREN {
 			return parseMethodCallExpr(p, ast.ThisExpr{Line: token.Line, Column: token.Column}, token.Value)
 		}
+		if p.currentTokenKind() == lexer.INCREMENT {
+			p.advance()
+			return ast.PostIncrementExpr{Operand: expr, Line: token.Line, Column: token.Column}
+		} else if p.currentTokenKind() == lexer.DECREMENT {
+			p.advance()
+			return ast.PostDecrementExpr{Operand: expr, Line: token.Line, Column: token.Column}
+		}
 		for p.currentTokenKind() == lexer.DOT {
 			p.advance()
 			member := p.expect(lexer.IDENTIFIER).Value
@@ -213,4 +220,15 @@ func parseConstructorCallExpr(p *parser) ast.Expr {
 	Args := parseArguments(p)
 	p.expect(lexer.CLOSE_PAREN)
 	return ast.ConstructorCallExpr{TypeName: className, Args: Args, Line: line, Column: column}
+}
+
+func parseUnaryExpr(p *parser) ast.Expr {
+	operatorToken := p.advance()
+	expr := parseExpression(p, DEFAULT)
+	if operatorToken.Kind == lexer.INCREMENT {
+		return ast.PreIncrementExpr{Operand: expr, Line: operatorToken.Line, Column: operatorToken.Column}
+	} else if operatorToken.Kind == lexer.DECREMENT {
+		return ast.PreDecrementExpr{Operand: expr, Line: operatorToken.Line, Column: operatorToken.Column}
+	}
+	panic(fmt.Sprintf("Unsupported unary operator %s at Line: %d, Column: %d\n", operatorToken.Value, operatorToken.Line, operatorToken.Column))
 }

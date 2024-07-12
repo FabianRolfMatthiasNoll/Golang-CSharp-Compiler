@@ -66,6 +66,22 @@ func (expr ConstructorCallExpr) String() string {
 	return fmt.Sprintf("ConstructorCallExpr{\n  ClassName: %s,\n  Arguments: %s\n}", expr.TypeName, indentString(fmt.Sprintf("%s", expr.Args), 1))
 }
 
+func (expr PreDecrementExpr) String() string {
+	return fmt.Sprintf("PreDecrementExpr{\n  Operand: %s\n}", indentString(fmt.Sprintf("%s", expr.Operand), 1))
+}
+
+func (expr PostDecrementExpr) String() string {
+	return fmt.Sprintf("PostDecrementExpr{\n  Operand: %s\n}", indentString(fmt.Sprintf("%s", expr.Operand), 1))
+}
+
+func (expr PreIncrementExpr) String() string {
+	return fmt.Sprintf("PreIncrementExpr{\n  Operand: %s\n}", indentString(fmt.Sprintf("%s", expr.Operand), 1))
+}
+
+func (expr PostIncrementExpr) String() string {
+	return fmt.Sprintf("PostIncrementExpr{\n  Operand: %s\n}", indentString(fmt.Sprintf("%s", expr.Operand), 1))
+}
+
 //=========================================================================================================
 // Statements
 //=========================================================================================================

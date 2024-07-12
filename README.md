@@ -49,7 +49,7 @@ This project aims to implement a basic C# compiler written in Go. The primary mo
 
 ## Project Structure
 
-```
+```go
 /src
 │
 ├── /lexer

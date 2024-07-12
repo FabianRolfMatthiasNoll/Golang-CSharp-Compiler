@@ -281,3 +281,43 @@ type ConstructorCallExpr struct {
 func (expr ConstructorCallExpr) expr()          {}
 func (expr ConstructorCallExpr) GetLine() int   { return expr.Line }
 func (expr ConstructorCallExpr) GetColumn() int { return expr.Column }
+
+type PreIncrementExpr struct {
+	Operand Expr
+	Line    int
+	Column  int
+}
+
+func (expr PreIncrementExpr) expr()          {}
+func (expr PreIncrementExpr) GetLine() int   { return expr.Line }
+func (expr PreIncrementExpr) GetColumn() int { return expr.Column }
+
+type PostIncrementExpr struct {
+	Operand Expr
+	Line    int
+	Column  int
+}
+
+func (expr PostIncrementExpr) expr()          {}
+func (expr PostIncrementExpr) GetLine() int   { return expr.Line }
+func (expr PostIncrementExpr) GetColumn() int { return expr.Column }
+
+type PreDecrementExpr struct {
+	Operand Expr
+	Line    int
+	Column  int
+}
+
+func (expr PreDecrementExpr) expr()          {}
+func (expr PreDecrementExpr) GetLine() int   { return expr.Line }
+func (expr PreDecrementExpr) GetColumn() int { return expr.Column }
+
+type PostDecrementExpr struct {
+	Operand Expr
+	Line    int
+	Column  int
+}
+
+func (expr PostDecrementExpr) expr()          {}
+func (expr PostDecrementExpr) GetLine() int   { return expr.Line }
+func (expr PostDecrementExpr) GetColumn() int { return expr.Column }
