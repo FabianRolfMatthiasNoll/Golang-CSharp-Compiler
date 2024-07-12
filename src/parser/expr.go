@@ -67,6 +67,7 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 
 func parseBinaryExpr(p *parser, left ast.Expr, bp bindingPower) ast.Expr {
 	operatorToken := p.advance()
+
 	right := parseExpression(p, bp)
 
 	return ast.BinaryExpr{Left: left, Operator: operatorToken, Right: right}
@@ -82,7 +83,37 @@ func parsePrefixExpr(p *parser) ast.Expr {
 func parseAssignmentExpr(p *parser, left ast.Expr, bp bindingPower) ast.Expr {
 	operatorToken := p.advance()
 	value := parseExpression(p, bp)
-	return ast.AssignmentExpr{Assignee: left, Operator: operatorToken, Value: value}
+
+	if len(operatorToken.Value) > 1 && operatorToken.Value[len(operatorToken.Value)-1] == '=' {
+		var binaryOp lexer.TokenKind
+		switch operatorToken.Value[0] {
+		case '+':
+			binaryOp = lexer.PLUS
+		case '-':
+			binaryOp = lexer.MINUS
+		case '*':
+			binaryOp = lexer.MULTIPLY
+		case '/':
+			binaryOp = lexer.DIVIDE
+		case '%':
+			binaryOp = lexer.MODULUS
+		default:
+			panic("Unsupported compound assignment operator")
+		}
+
+		value = ast.BinaryExpr{
+			Left:     left,
+			Operator: lexer.Token{Kind: binaryOp, Value: string(operatorToken.Value[0]), Line: operatorToken.Line, Column: operatorToken.Column},
+			Right:    value,
+		}
+		operatorToken = lexer.Token{Kind: lexer.ASSIGNMENT, Value: "=", Line: operatorToken.Line, Column: operatorToken.Column}
+	}
+
+	return ast.AssignmentExpr{
+		Assignee: left,
+		Operator: operatorToken,
+		Value:    value,
+	}
 }
 
 func parseGroupedExpr(p *parser) ast.Expr {
