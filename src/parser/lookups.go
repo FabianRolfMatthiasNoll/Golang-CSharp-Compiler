@@ -115,4 +115,5 @@ func createTokenLookups() {
 
 	// control flow
 	stmt(lexer.WHILE, parseWhileStmt)
+	stmt(lexer.FOR, parseForStmt)
 }

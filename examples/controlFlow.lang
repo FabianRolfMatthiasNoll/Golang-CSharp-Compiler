@@ -4,5 +4,9 @@ public class controlFlow{
         while(i < 4){
             i = i + 1;
         }
+
+        for(int x = 0; x < i; x++){
+            x *= 5;
+        }
     }
 }

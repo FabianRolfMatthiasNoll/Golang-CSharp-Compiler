@@ -19,10 +19,9 @@
 - constructor calls
 - Post/Pre increment/decrement
 - while
+- for (syntactic sugar => Conversion to While)
 
 ## to be implemented
-
-- for
 - if
 - if else
 - swicht case

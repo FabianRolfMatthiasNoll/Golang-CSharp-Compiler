@@ -246,3 +246,36 @@ func parseWhileStmt(p *parser) ast.Stmt {
 	body := parseBlockStmt(p)
 	return ast.WhileStmt{Condition: condition, Body: body, Line: line, Column: column}
 }
+
+func parseForStmt(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.OPEN_PAREN)
+
+	var initializer ast.Stmt
+	if p.currentTokenKind() != lexer.SEMICOLON {
+		initializer = parseStatement(p)
+	} else {
+		p.advance()
+	}
+
+	var condition ast.Expr
+	if p.currentTokenKind() != lexer.SEMICOLON {
+		condition = parseExpression(p, DEFAULT)
+	}
+	p.expect(lexer.SEMICOLON)
+
+	var increment ast.Expr
+	if p.currentTokenKind() != lexer.CLOSE_PAREN {
+		increment = parseExpression(p, DEFAULT)
+	}
+	p.expect(lexer.CLOSE_PAREN)
+
+	body := parseBlockStmt(p)
+
+	// convert for loop to while loop
+	body.Body = append(body.Body, ast.ExpressionStmt{Expression: increment, Line: increment.GetLine(), Column: increment.GetColumn()})
+	while := ast.WhileStmt{Condition: condition, Body: body, Line: line, Column: column}
+
+	return ast.BlockStmt{Body: []ast.Stmt{initializer, while}, Line: line, Column: column}
+}
