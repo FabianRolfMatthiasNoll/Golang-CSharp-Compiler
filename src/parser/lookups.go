@@ -91,6 +91,7 @@ func createTokenLookups() {
 
 	// Handle member access and method calls
 	led(lexer.DOT, MEMBER, parseMemberAccessOrMethodCall)
+	nud(lexer.NEW, parseConstructorCallExpr)
 
 	// Statements
 	stmt(lexer.VAR, parseVarDeclStmt)

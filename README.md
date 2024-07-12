@@ -16,6 +16,7 @@
 - name resolution aka this.number or foo.bar()
 - method calls
 - differentiation between field, method or constructor
+- constructor calls
 
 ## to be implemented
 
@@ -27,7 +28,6 @@
 - break, continue
 - getter and setter members
 - Post/Pre increment/decrement
-- constructor calls
 
 => Then TypeCheck , Bytecode etc.
 This should be enough implementation to make a full compiler for a really basic c# language which can then be extended on

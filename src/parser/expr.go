@@ -13,7 +13,7 @@ func parseExpression(p *parser, bp bindingPower) ast.Expr {
 	nud_fn, exists := nudTable[tokenKind]
 
 	if !exists {
-		panic(fmt.Sprintf("NUD Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
+		panic(fmt.Sprintf("NUD Handler expected for token %s at Line: %d, Column: %d\n", lexer.TokenKindString(tokenKind), p.currentToken().Line, p.currentToken().Column))
 	}
 
 	left := nud_fn(p)
@@ -23,7 +23,7 @@ func parseExpression(p *parser, bp bindingPower) ast.Expr {
 		led_fn, exists := ledTable[tokenKind]
 
 		if !exists {
-			panic(fmt.Sprintf("LED Handler expected for token %s\n", lexer.TokenKindString(tokenKind)))
+			panic(fmt.Sprintf("LED Handler expected for token %s at Line: %d, Column: %d\n", lexer.TokenKindString(tokenKind), p.currentToken().Line, p.currentToken().Column))
 		}
 
 		left = led_fn(p, left, bpTable[tokenKind])
@@ -59,7 +59,7 @@ func parsePrimaryExpr(p *parser) ast.Expr {
 			}
 		}
 		return expr
-	
+
 	default:
 		panic(fmt.Sprintf("Cannot create primary expression from token %s\n", lexer.TokenKindString(p.currentTokenKind())))
 	}
@@ -107,6 +107,7 @@ func parseMemberAccessOrMethodCall(p *parser, receiver ast.Expr, bp bindingPower
 }
 
 func parseMethodCallExpr(p *parser, receiver ast.Expr, methodName string) ast.Expr {
+	line, column := p.currentToken().Line, p.currentToken().Column
 	p.expect(lexer.OPEN_PAREN)
 	args := parseArguments(p)
 	p.expect(lexer.CLOSE_PAREN)
@@ -115,8 +116,8 @@ func parseMethodCallExpr(p *parser, receiver ast.Expr, methodName string) ast.Ex
 		Receiver:   receiver,
 		MethodName: methodName,
 		Args:       args,
-		Line:       p.currentToken().Line,
-		Column:     p.currentToken().Column,
+		Line:       line,
+		Column:     column,
 	}
 }
 
@@ -170,4 +171,15 @@ func parseBooleanExpr(p *parser) ast.Expr {
 func parseNullExpr(p *parser) ast.Expr {
 	token := p.advance()
 	return ast.NullExpr{Line: token.Line, Column: token.Column}
+}
+
+func parseConstructorCallExpr(p *parser) ast.Expr {
+	// new className(Args)
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	className := p.expect(lexer.IDENTIFIER).Value
+	p.expect(lexer.OPEN_PAREN)
+	Args := parseArguments(p)
+	p.expect(lexer.CLOSE_PAREN)
+	return ast.ConstructorCallExpr{TypeName: className, Args: Args, Line: line, Column: column}
 }

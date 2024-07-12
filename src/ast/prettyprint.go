@@ -62,6 +62,10 @@ func (expr MemberAccessExpr) String() string {
 	return fmt.Sprintf("MemberAccessExpr{\n  Receiver: %s,\n  Member: %s\n}", indentString(fmt.Sprintf("%s", expr.Receiver), 1), expr.Member)
 }
 
+func (expr ConstructorCallExpr) String() string {
+	return fmt.Sprintf("ConstructorCallExpr{\n  ClassName: %s,\n  Arguments: %s\n}", expr.TypeName, indentString(fmt.Sprintf("%s", expr.Args), 1))
+}
+
 //=========================================================================================================
 // Statements
 //=========================================================================================================

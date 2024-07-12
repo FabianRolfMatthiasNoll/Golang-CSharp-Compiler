@@ -21,8 +21,8 @@ type Modifier struct {
 }
 
 type Type struct {
-	Name string
-	Line int
+	Name   string
+	Line   int
 	Column int
 }
 
@@ -237,7 +237,7 @@ func (expr PrefixExpr) GetLine() int   { return expr.Line }
 func (expr PrefixExpr) GetColumn() int { return expr.Column }
 
 type AssignmentExpr struct {
-	Assignee  Expr
+	Assignee Expr
 	Operator lexer.Token
 	Value    Expr
 	Line     int
@@ -270,3 +270,14 @@ type MemberAccessExpr struct {
 func (expr MemberAccessExpr) expr()          {}
 func (expr MemberAccessExpr) GetLine() int   { return expr.Line }
 func (expr MemberAccessExpr) GetColumn() int { return expr.Column }
+
+type ConstructorCallExpr struct {
+	TypeName string
+	Args     []Expr
+	Line     int
+	Column   int
+}
+
+func (expr ConstructorCallExpr) expr()          {}
+func (expr ConstructorCallExpr) GetLine() int   { return expr.Line }
+func (expr ConstructorCallExpr) GetColumn() int { return expr.Column }
