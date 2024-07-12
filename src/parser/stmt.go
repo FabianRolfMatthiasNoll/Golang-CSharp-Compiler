@@ -236,3 +236,13 @@ func parseBlockStmt(p *parser) ast.BlockStmt {
 		Column: startToken.Column,
 	}
 }
+
+func parseWhileStmt(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.OPEN_PAREN)
+	condition := parseExpression(p, DEFAULT)
+	p.expect(lexer.CLOSE_PAREN)
+	body := parseBlockStmt(p)
+	return ast.WhileStmt{Condition: condition, Body: body, Line: line, Column: column}
+}

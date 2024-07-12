@@ -2,6 +2,10 @@ public class ConstructorCall{
 
     ConstructorCall(int age){
         age += 10;
+        i++;
+        ++i;
+        i--;
+        --i;
     }
 
     void Main(){

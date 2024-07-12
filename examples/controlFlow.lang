@@ -1,0 +1,8 @@
+public class controlFlow{
+    public void Main(){
+        int i;
+        while(i < 4){
+            i = i + 1;
+        }
+    }
+}

@@ -112,4 +112,7 @@ func createTokenLookups() {
 	stmt(lexer.FINAL, parseVarDeclStmt)
 	stmt(lexer.CLASS, parseClassDeclStmt)
 	stmt(lexer.RETURN, parseReturnStmt)
+
+	// control flow
+	stmt(lexer.WHILE, parseWhileStmt)
 }

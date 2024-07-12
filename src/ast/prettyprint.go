@@ -166,3 +166,13 @@ func (stmt ConstructorDeclStmt) String() string {
 func (stmt ReturnStmt) String() string {
 	return fmt.Sprintf("ReturnStmt{\n  Value: %s,\n}", indentString(fmt.Sprintf("%s", stmt.Value), 1))
 }
+
+func (stmt IfStmt) String() string {
+	return fmt.Sprintf("IfStmt{\n  Condition: %s,\n  Then: %s,\n  Else: %s\n}",
+		indentString(fmt.Sprintf("%s", stmt.Condition), 1), indentString(fmt.Sprintf("%s", stmt.Then), 1), indentString(fmt.Sprintf("%s", stmt.Else), 1))
+}
+
+func (stmt WhileStmt) String() string {
+	return fmt.Sprintf("WhileStmt{\n  Condition: %s,\n  Body: %s\n}",
+		indentString(fmt.Sprintf("%s", stmt.Condition), 1), indentString(fmt.Sprintf("%s", stmt.Body), 1))
+}

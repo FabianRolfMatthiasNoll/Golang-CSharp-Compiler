@@ -151,6 +151,31 @@ type Parameter struct {
 	Identifier string
 }
 
+// Control flow statements
+
+type WhileStmt struct {
+	Condition Expr
+	Body      Stmt
+	Line      int
+	Column    int
+}
+
+func (stmt WhileStmt) stmt()          {}
+func (stmt WhileStmt) GetLine() int   { return stmt.Line }
+func (stmt WhileStmt) GetColumn() int { return stmt.Column }
+
+type IfStmt struct {
+	Condition Expr
+	Then      Stmt
+	Else      Stmt
+	Line      int
+	Column    int
+}
+
+func (stmt IfStmt) stmt()          {}
+func (stmt IfStmt) GetLine() int   { return stmt.Line }
+func (stmt IfStmt) GetColumn() int { return stmt.Column }
+
 // ========================================================================================================
 // Expressions
 // ========================================================================================================

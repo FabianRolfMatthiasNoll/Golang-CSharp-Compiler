@@ -18,13 +18,13 @@
 - differentiation between field, method or constructor
 - constructor calls
 - Post/Pre increment/decrement
+- while
 
 ## to be implemented
 
 - for
 - if
 - if else
-- while
 - swicht case
 - break, continue
 - getter and setter members
