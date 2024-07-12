@@ -155,16 +155,6 @@ type Parameter struct {
 // Expressions
 // ========================================================================================================
 
-type NumberExpr struct {
-	Value  float64
-	Line   int
-	Column int
-}
-
-func (expr NumberExpr) expr()          {}
-func (expr NumberExpr) GetLine() int   { return expr.Line }
-func (expr NumberExpr) GetColumn() int { return expr.Column }
-
 type StringExpr struct {
 	Value  string
 	Line   int
@@ -185,6 +175,36 @@ func (expr IdentifierExpr) expr()          {}
 func (expr IdentifierExpr) GetLine() int   { return expr.Line }
 func (expr IdentifierExpr) GetColumn() int { return expr.Column }
 
+type IntLiteralExpr struct {
+	Value  int64
+	Line   int
+	Column int
+}
+
+func (expr IntLiteralExpr) expr()          {}
+func (expr IntLiteralExpr) GetLine() int   { return expr.Line }
+func (expr IntLiteralExpr) GetColumn() int { return expr.Column }
+
+type BoolLiteralExpr struct {
+	Value  bool
+	Line   int
+	Column int
+}
+
+func (expr BoolLiteralExpr) expr()          {}
+func (expr BoolLiteralExpr) GetLine() int   { return expr.Line }
+func (expr BoolLiteralExpr) GetColumn() int { return expr.Column }
+
+type CharLiteralExpr struct {
+	Value  rune
+	Line   int
+	Column int
+}
+
+func (expr CharLiteralExpr) expr()          {}
+func (expr CharLiteralExpr) GetLine() int   { return expr.Line }
+func (expr CharLiteralExpr) GetColumn() int { return expr.Column }
+
 type ThisExpr struct {
 	Line   int
 	Column int
@@ -194,24 +214,14 @@ func (expr ThisExpr) expr()          {}
 func (expr ThisExpr) GetLine() int   { return expr.Line }
 func (expr ThisExpr) GetColumn() int { return expr.Column }
 
-type BoolExpr struct {
-	Value  bool
+type NullLiteralExpr struct {
 	Line   int
 	Column int
 }
 
-func (expr BoolExpr) expr()          {}
-func (expr BoolExpr) GetLine() int   { return expr.Line }
-func (expr BoolExpr) GetColumn() int { return expr.Column }
-
-type NullExpr struct {
-	Line   int
-	Column int
-}
-
-func (expr NullExpr) expr()          {}
-func (expr NullExpr) GetLine() int   { return expr.Line }
-func (expr NullExpr) GetColumn() int { return expr.Column }
+func (expr NullLiteralExpr) expr()          {}
+func (expr NullLiteralExpr) GetLine() int   { return expr.Line }
+func (expr NullLiteralExpr) GetColumn() int { return expr.Column }
 
 type BinaryExpr struct {
 	Left     Expr

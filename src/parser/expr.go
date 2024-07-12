@@ -35,8 +35,8 @@ func parseExpression(p *parser, bp bindingPower) ast.Expr {
 func parsePrimaryExpr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
 	case lexer.NUMBER:
-		number, _ := strconv.ParseFloat(p.advance().Value, 64)
-		return ast.NumberExpr{Value: number, Line: p.currentToken().Line, Column: p.currentToken().Column}
+		number, _ := strconv.ParseInt(p.advance().Value, 0, 64)
+		return ast.IntLiteralExpr{Value: number, Line: p.currentToken().Line, Column: p.currentToken().Column}
 	case lexer.STRING:
 		return ast.StringExpr{Value: p.advance().Value, Line: p.currentToken().Line, Column: p.currentToken().Column}
 	case lexer.IDENTIFIER:
@@ -203,12 +203,12 @@ func parseThisExpr(p *parser) ast.Expr {
 
 func parseBooleanExpr(p *parser) ast.Expr {
 	tokenValue := p.advance().Value
-	return ast.BoolExpr{Value: tokenValue == "true", Line: p.currentToken().Line, Column: p.currentToken().Column}
+	return ast.BoolLiteralExpr{Value: tokenValue == "true", Line: p.currentToken().Line, Column: p.currentToken().Column}
 }
 
 func parseNullExpr(p *parser) ast.Expr {
 	token := p.advance()
-	return ast.NullExpr{Line: token.Line, Column: token.Column}
+	return ast.NullLiteralExpr{Line: token.Line, Column: token.Column}
 }
 
 func parseConstructorCallExpr(p *parser) ast.Expr {

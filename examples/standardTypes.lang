@@ -1,0 +1,6 @@
+class standardTypes{
+    string stringTest;
+    int intTest;
+    char charTest;
+    bool boolTest;
+}

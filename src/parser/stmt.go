@@ -66,6 +66,8 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 	if p.currentTokenKind() == lexer.ASSIGNMENT {
 		p.advance() // consume '='
 		assignedValue = parseExpression(p, ASSIGNMENT)
+	} else {
+		assignedValue = assignStandardType(dataType, assignedValue, p)
 	}
 
 	p.expect(lexer.SEMICOLON)
@@ -138,26 +140,28 @@ func parseClassMember(p *parser, className string) ast.ClassMember {
 }
 
 func parseFieldOrMethod(p *parser, modifiers []ast.Modifier) ast.ClassMember {
-	typ := parseType(p)
+	dataType := parseType(p)
 	identifier := p.expectError(lexer.IDENTIFIER, "Expected identifier").Value
 
 	if p.currentTokenKind() == lexer.OPEN_PAREN {
 		// It's a method
-		return parseMethod(p, modifiers, typ, identifier)
+		return parseMethod(p, modifiers, dataType, identifier)
 	} else {
 		// It's a field
-		var value ast.Expr
+		var assignedValue ast.Expr
 		if p.currentTokenKind() == lexer.ASSIGNMENT {
 			p.advance() // consume '='
-			value = parseExpression(p, ASSIGNMENT)
+			assignedValue = parseExpression(p, ASSIGNMENT)
+		} else {
+			assignedValue = assignStandardType(dataType, assignedValue, p)
 		}
 
 		p.expect(lexer.SEMICOLON)
 		return ast.FieldDeclStmt{
 			Modifiers:  modifiers,
-			Type:       typ,
+			Type:       dataType,
 			Identifier: identifier,
-			Value:      value,
+			Value:      assignedValue,
 			Line:       p.currentToken().Line,
 			Column:     p.currentToken().Column,
 		}

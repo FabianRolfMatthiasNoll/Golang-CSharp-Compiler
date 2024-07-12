@@ -16,8 +16,8 @@ func indentString(s string, level int) string {
 // Expressions
 //=========================================================================================================
 
-func (expr NumberExpr) String() string {
-	return fmt.Sprintf("NumberExpr{Value: %f}", expr.Value)
+func (expr IntLiteralExpr) String() string {
+	return fmt.Sprintf("IntLiteralExpr{Value: %d}", expr.Value)
 }
 
 func (expr StringExpr) String() string {
@@ -32,12 +32,16 @@ func (expr ThisExpr) String() string {
 	return "ThisExpr{}"
 }
 
-func (expr BoolExpr) String() string {
-	return fmt.Sprintf("BoolExpr{Value: %t}", expr.Value)
+func (expr BoolLiteralExpr) String() string {
+	return fmt.Sprintf("BoolLiteralExpr{Value: %t}", expr.Value)
 }
 
-func (expr NullExpr) String() string {
-	return "NullExpr{}"
+func (expr NullLiteralExpr) String() string {
+	return "NullLiteralExpr{}"
+}
+
+func (expr CharLiteralExpr) String() string {
+	return fmt.Sprintf("CharExpr{Value: %c}", expr.Value)
 }
 
 func (expr BinaryExpr) String() string {
