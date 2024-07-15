@@ -113,6 +113,11 @@ func createTokenLookups() {
 	stmt(lexer.CLASS, parseClassDeclStmt)
 	stmt(lexer.RETURN, parseReturnStmt)
 
+	stmt(lexer.CONTINUE, parseContinueStmt)
+	stmt(lexer.BREAK, parseBreakStmt)
+	stmt(lexer.IF, parseIfStmt)
+	stmt(lexer.SWITCH, parseSwitchStmt)
+
 	// control flow
 	stmt(lexer.WHILE, parseWhileStmt)
 	stmt(lexer.FOR, parseForStmt)

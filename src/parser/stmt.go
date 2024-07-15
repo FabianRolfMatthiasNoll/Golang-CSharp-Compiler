@@ -279,3 +279,90 @@ func parseForStmt(p *parser) ast.Stmt {
 
 	return ast.BlockStmt{Body: []ast.Stmt{initializer, while}, Line: line, Column: column}
 }
+
+func parseContinueStmt(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.SEMICOLON)
+	return ast.ContinueStmt{Line: line, Column: column}
+}
+
+func parseBreakStmt(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.SEMICOLON)
+	return ast.BreakStmt{Line: line, Column: column}
+}
+
+func parseIfStmt(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.OPEN_PAREN)
+	condition := parseExpression(p, DEFAULT)
+	p.expect(lexer.CLOSE_PAREN)
+	then := parseBlockStmt(p)
+
+	var elseStmt ast.Stmt
+	if p.currentTokenKind() == lexer.ELSE {
+		p.advance()
+		elseStmt = parseBlockStmt(p)
+	}
+
+	return ast.IfStmt{Condition: condition, Then: then, Else: elseStmt, Line: line, Column: column}
+}
+
+func parseSwitchStmt(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.OPEN_PAREN)
+	expression := parseExpression(p, DEFAULT)
+	p.expect(lexer.CLOSE_PAREN)
+	p.expect(lexer.OPEN_BRACE)
+
+	cases := []ast.SwitchCase{}
+	var defaultCase ast.Stmt
+	for p.currentTokenKind() != lexer.CLOSE_BRACE {
+		if p.currentTokenKind() == lexer.CASE {
+			cases = append(cases, parseSwitchCase(p))
+		} else if p.currentTokenKind() == lexer.DEFAULT {
+			defaultCase = parseDefaultCase(p)
+		} else {
+			panic(fmt.Sprintf("Expected case or default but got %s at line %d, column %d", lexer.TokenKindString(p.currentTokenKind()), p.currentToken().Line, p.currentToken().Column))
+		}
+	}
+
+	p.expect(lexer.CLOSE_BRACE)
+
+	return ast.SwitchStmt{Expression: expression, Cases: cases, Default: defaultCase, Line: line, Column: column}
+}
+
+func parseSwitchCase(p *parser) ast.SwitchCase {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	value := parseExpression(p, DEFAULT)
+	p.expect(lexer.COLON)
+	body := []ast.Stmt{}
+
+	for p.currentTokenKind() != lexer.CASE && p.currentTokenKind() != lexer.DEFAULT && p.currentTokenKind() != lexer.CLOSE_BRACE {
+		body = append(body, parseStatement(p))
+	}
+
+	bodyBlock := ast.BlockStmt{Body: body, Line: line, Column: column}
+
+	return ast.SwitchCase{Value: value, Body: bodyBlock, Line: line, Column: column}
+}
+
+func parseDefaultCase(p *parser) ast.Stmt {
+	line, column := p.currentToken().Line, p.currentToken().Column
+	p.advance()
+	p.expect(lexer.COLON)
+	body := []ast.Stmt{}
+
+	for p.currentTokenKind() != lexer.CLOSE_BRACE {
+		body = append(body, parseStatement(p))
+	}
+
+	bodyBlock := ast.BlockStmt{Body: body, Line: line, Column: column}
+
+	return bodyBlock
+}

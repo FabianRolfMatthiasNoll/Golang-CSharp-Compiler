@@ -176,6 +176,47 @@ func (stmt IfStmt) stmt()          {}
 func (stmt IfStmt) GetLine() int   { return stmt.Line }
 func (stmt IfStmt) GetColumn() int { return stmt.Column }
 
+type ContinueStmt struct {
+	Line   int
+	Column int
+}
+
+func (stmt ContinueStmt) stmt()          {}
+func (stmt ContinueStmt) GetLine() int   { return stmt.Line }
+func (stmt ContinueStmt) GetColumn() int { return stmt.Column }
+
+type BreakStmt struct {
+	Line   int
+	Column int
+}
+
+func (stmt BreakStmt) stmt()          {}
+func (stmt BreakStmt) GetLine() int   { return stmt.Line }
+func (stmt BreakStmt) GetColumn() int { return stmt.Column }
+
+type SwitchStmt struct {
+	Expression Expr
+	Cases      []SwitchCase
+	Default    Stmt
+	Line       int
+	Column     int
+}
+
+func (stmt SwitchStmt) stmt()          {}
+func (stmt SwitchStmt) GetLine() int   { return stmt.Line }
+func (stmt SwitchStmt) GetColumn() int { return stmt.Column }
+
+type SwitchCase struct {
+	Value  Expr
+	Body   Stmt
+	Line   int
+	Column int
+}
+
+func (stmt SwitchCase) stmt()          {}
+func (stmt SwitchCase) GetLine() int   { return stmt.Line }
+func (stmt SwitchCase) GetColumn() int { return stmt.Column }
+
 // ========================================================================================================
 // Expressions
 // ========================================================================================================

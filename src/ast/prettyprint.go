@@ -176,3 +176,29 @@ func (stmt WhileStmt) String() string {
 	return fmt.Sprintf("WhileStmt{\n  Condition: %s,\n  Body: %s\n}",
 		indentString(fmt.Sprintf("%s", stmt.Condition), 1), indentString(fmt.Sprintf("%s", stmt.Body), 1))
 }
+
+func (stmt ContinueStmt) String() string {
+	return "ContinueStmt{}"
+}
+
+func (stmt BreakStmt) String() string {
+	return "BreakStmt{}"
+}
+
+func (stmt SwitchStmt) String() string {
+	cases := make([]string, len(stmt.Cases))
+	for i, c := range stmt.Cases {
+		cases[i] = indentString(fmt.Sprintf("%s", c), 1)
+	}
+	defaultCase := ""
+	if stmt.Default != nil {
+		defaultCase = indentString(fmt.Sprintf("%s", stmt.Default), 1)
+	}
+	return fmt.Sprintf("SwitchStmt{\n  Expression: %s,\n  Cases: [\n%s\n  ],\n  DefaultCase: %s\n}",
+		indentString(fmt.Sprintf("%s", stmt.Expression), 1), strings.Join(cases, ",\n"), defaultCase)
+}
+
+func (stmt SwitchCase) String() string {
+	return fmt.Sprintf("SwitchCase{\n  Value: %s,\n  Body: %s\n}",
+		indentString(fmt.Sprintf("%s", stmt.Value), 1), indentString(fmt.Sprintf("%s", stmt.Body), 1))
+}

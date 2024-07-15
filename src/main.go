@@ -9,7 +9,7 @@ import (
 )
 
 func main() {
-	bytes, _ := os.ReadFile("./examples/controlFlow.lang")
+	bytes, _ := os.ReadFile("./examples/switchIf.lang")
 
 	tokens := lexer.Tokenize(string(bytes))
 

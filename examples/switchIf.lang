@@ -1,0 +1,19 @@
+public class SwitchIf{
+
+    private void Main(int a, int b){
+        if (a < b){
+            a++;
+        } else {
+            a--;
+        }
+
+        switch (a) {
+            case 1:
+                b++;
+            case 2:
+                b--;
+            default:
+                a--;
+        }
+    }
+}
