@@ -12,9 +12,21 @@ func indentString(s string, level int) string {
 	return indent + strings.Replace(s, "\n", "\n"+indent, -1)
 }
 
+func (prog Program) String() string {
+	classes := make([]string, len(prog.Classes))
+	for i, c := range prog.Classes {
+		classes[i] = indentString(c.String(), 1)
+	}
+	return fmt.Sprintf("Program{\n  Classes: [\n%s\n  ]\n}", strings.Join(classes, ",\n"))
+}
+
 //=========================================================================================================
 // Expressions
 //=========================================================================================================
+
+func (expr TypedExpr) String() string {
+	return fmt.Sprintf("TypedExpr{\n  Expression: %s\n}", indentString(fmt.Sprintf("%s", expr.Expr), 1))
+}
 
 func (expr IntLiteralExpr) String() string {
 	return fmt.Sprintf("IntLiteralExpr{Value: %d}", expr.Value)
@@ -89,6 +101,10 @@ func (expr PostIncrementExpr) String() string {
 //=========================================================================================================
 // Statements
 //=========================================================================================================
+
+func (stmt TypedStmt) String() string {
+	return fmt.Sprintf("TypedStmt{\n  Statement: %s\n}", indentString(fmt.Sprintf("%s", stmt.Stmt), 1))
+}
 
 func (stmt BlockStmt) String() string {
 	body := make([]string, len(stmt.Body))

@@ -6,10 +6,11 @@ import (
 
 	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/lexer"
 	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/parser"
+	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/typecheck"
 )
 
 func main() {
-	bytes, _ := os.ReadFile("./examples/switchIf.lang")
+	bytes, _ := os.ReadFile("./examples/standardTypes.lang")
 
 	tokens := lexer.Tokenize(string(bytes))
 
@@ -19,4 +20,9 @@ func main() {
 
 	ast := parser.Parse(tokens)
 	fmt.Println(ast)
+
+	typeChecker := typecheck.NewTypeChecker()
+	typedAst := typeChecker.CheckProgram(&ast)
+	fmt.Println(typedAst)
+
 }

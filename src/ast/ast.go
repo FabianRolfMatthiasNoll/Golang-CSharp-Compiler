@@ -35,6 +35,17 @@ type Program struct {
 // Statements
 // ========================================================================================================
 
+type TypedStmt struct {
+	Type   string
+	Stmt   Stmt
+	Line   int
+	Column int
+}
+
+func (stmt TypedStmt) stmt()          {}
+func (stmt TypedStmt) GetLine() int   { return stmt.Line }
+func (stmt TypedStmt) GetColumn() int { return stmt.Column }
+
 type BlockStmt struct {
 	Body   []Stmt
 	Line   int
@@ -220,6 +231,17 @@ func (stmt SwitchCase) GetColumn() int { return stmt.Column }
 // ========================================================================================================
 // Expressions
 // ========================================================================================================
+
+type TypedExpr struct {
+	Type   string
+	Expr   Expr
+	Line   int
+	Column int
+}
+
+func (expr TypedExpr) expr()          {}
+func (expr TypedExpr) GetLine() int   { return expr.Line }
+func (expr TypedExpr) GetColumn() int { return expr.Column }
 
 type StringExpr struct {
 	Value  string
