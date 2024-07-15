@@ -20,14 +20,11 @@
 - Post/Pre increment/decrement
 - while
 - for (syntactic sugar => Conversion to While)
-
-## to be implemented
 - if
 - if else
 - swicht case
 - break, continue
+
+## to be implemented
+
 - getter and setter members
-
-
-=> Then TypeCheck , Bytecode etc.
-This should be enough implementation to make a full compiler for a really basic c# language which can then be extended on
