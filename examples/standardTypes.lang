@@ -1,8 +1,8 @@
 class standardTypes{
-    string stringTest;
+    int intTest;
     char charTest;
 
-    public Bae Main(int a, int b){
+    public void Main(int a, int b){
     }
 }
 

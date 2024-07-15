@@ -263,6 +263,26 @@ func (expr IdentifierExpr) expr()          {}
 func (expr IdentifierExpr) GetLine() int   { return expr.Line }
 func (expr IdentifierExpr) GetColumn() int { return expr.Column }
 
+type LocalVarExpr struct {
+	Name   string
+	Line   int
+	Column int
+}
+
+func (expr LocalVarExpr) expr()          {}
+func (expr LocalVarExpr) GetLine() int   { return expr.Line }
+func (expr LocalVarExpr) GetColumn() int { return expr.Column }
+
+type FieldVarExpr struct {
+	Name   string
+	Line   int
+	Column int
+}
+
+func (expr FieldVarExpr) expr()          {}
+func (expr FieldVarExpr) GetLine() int   { return expr.Line }
+func (expr FieldVarExpr) GetColumn() int { return expr.Column }
+
 type IntLiteralExpr struct {
 	Value  int64
 	Line   int
