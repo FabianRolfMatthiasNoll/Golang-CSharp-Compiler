@@ -1,6 +1,11 @@
 class standardTypes{
     string stringTest;
-    int intTest;
     char charTest;
-    bool boolTest;
+
+    public Bae Main(int a, int b){
+    }
+}
+
+class Bae{
+
 }

@@ -21,6 +21,10 @@ func main() {
 	ast := parser.Parse(tokens)
 	fmt.Println(ast)
 
+	fmt.Println("=========================================")
+	fmt.Println("Type checking...")
+	fmt.Println("=========================================")
+
 	typeChecker := typecheck.NewTypeChecker()
 	typedAst := typeChecker.CheckProgram(&ast)
 	fmt.Println(typedAst)

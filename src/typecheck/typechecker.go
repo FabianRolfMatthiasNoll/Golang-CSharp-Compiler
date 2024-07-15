@@ -7,7 +7,8 @@ import (
 )
 
 type TypeChecker struct {
-	env *TypeEnvironment
+	env     *TypeEnvironment
+	classes map[string]ast.ClassDeclStmt
 }
 
 func NewTypeChecker() *TypeChecker {
@@ -15,6 +16,11 @@ func NewTypeChecker() *TypeChecker {
 }
 
 func (tc *TypeChecker) CheckProgram(prog *ast.Program) ast.Program {
+	tc.classes = make(map[string]ast.ClassDeclStmt)
+	for i := range prog.Classes {
+		tc.classes[prog.Classes[i].Name] = prog.Classes[i]
+	}
+
 	for i := range prog.Classes {
 		tc.CheckClassDeclStmt(&prog.Classes[i])
 	}
@@ -41,9 +47,9 @@ func (tc *TypeChecker) CheckClassDeclStmt(class *ast.ClassDeclStmt) {
 		case ast.FieldDeclStmt:
 			tc.CheckFieldDeclStmt(&member)
 			m = member
-		// case ast.MethodDeclStmt:
-		// 	tc.CheckMethodDeclStmt(&member)
-		// 	m = member
+		case ast.MethodDeclStmt:
+			tc.CheckMethodDeclStmt(&member)
+			m = member
 		// case ast.ConstructorDeclStmt:
 		// 	tc.CheckConstructorDeclStmt(&member)
 		// 	m = member
@@ -87,10 +93,9 @@ func (tc *TypeChecker) CheckExpr(expr ast.Expr) ast.TypedExpr {
 	case ast.CharLiteralExpr:
 		return ast.TypedExpr{Type: "char", Expr: e}
 	case ast.BinaryExpr:
-		// TODO: Implement
+		return tc.CheckBinaryExpr(e)
 	case ast.MethodCallExpr:
-		// TODO: Implement
-		return ast.TypedExpr{}
+		return tc.CheckMethodCallExpr(e)
 	case ast.AssignmentExpr:
 		assigneeType := tc.CheckExpr(e.Assignee)
 		valueType := tc.CheckExpr(e.Value)
@@ -102,6 +107,87 @@ func (tc *TypeChecker) CheckExpr(expr ast.Expr) ast.TypedExpr {
 		tc.errorf(expr.GetLine(), expr.GetColumn(), "unexpected expression")
 	}
 	return ast.TypedExpr{}
+}
+
+func (tc *TypeChecker) CheckBinaryExpr(expr ast.Expr) ast.TypedExpr {
+	// TODO: Implement
+	return ast.TypedExpr{}
+}
+
+func (tc *TypeChecker) CheckMethodCallExpr(expr ast.MethodCallExpr) ast.TypedExpr {
+	// TODO: Implement
+	return ast.TypedExpr{}
+}
+
+func (tc *TypeChecker) CheckMethodDeclStmt(method *ast.MethodDeclStmt) {
+	tc.env = NewTypeEnv(tc.env) // New scope for method
+	defer func() { tc.env = tc.env.outer }()
+
+	// Register parameters
+	for _, param := range method.Parameters {
+		tc.env.Define(param.Identifier, param.Type.Name, false, false, true)
+	}
+
+	tc.env.Define("thisMethod", method.ReturnType.Name, false, false, false)
+
+	// Check and type method body
+	if block, ok := method.Body.(ast.BlockStmt); ok {
+		method.Body = tc.CheckBlockStmt(&block)
+	} else {
+		tc.errorf(method.GetLine(), method.GetColumn(), "method body should be a block statement")
+	}
+
+	// Check return type
+	if !tc.isTypeCompatible(method.ReturnType.Name, method.Body.(ast.TypedStmt).Type) {
+		tc.errorf(method.GetLine(), method.GetColumn(), "type mismatch: expected %s, got %s", method.ReturnType.Name, method.Body.(ast.TypedStmt).Type)
+	}
+}
+
+func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
+	tc.env = NewTypeEnv(tc.env)
+	defer func() { tc.env = tc.env.outer }()
+
+	for i, stmt := range block.Body {
+		switch stmt := stmt.(type) {
+		// case ast.VarDeclStmt:
+		// 	tc.CheckVarDeclStmt(&stmt)
+		// case ast.AssignStmt:
+		// 	tc.CheckAssignStmt(&stmt)
+		// case ast.ReturnStmt:
+		// 	tc.CheckReturnStmt(&stmt)
+		// case ast.IfStmt:
+		// 	tc.CheckIfStmt(&stmt)
+		// case ast.WhileStmt:
+		// 	tc.CheckWhileStmt(&stmt)
+		// case ast.MethodCallStmt:
+		// 	tc.CheckMethodCallStmt(&stmt)
+		default:
+			tc.errorf(stmt.GetLine(), stmt.GetColumn(), "unexpected statement")
+		}
+		block.Body[i] = stmt
+	}
+	// TODO: Check type of block by upper bound of returns etc. Also check if all paths return
+	return ast.TypedStmt{Stmt: block, Type: "void"}
+}
+
+func (tc *TypeChecker) isTypeCompatible(a, b string) bool {
+	if a == "char" && b == "int" {
+		return true
+	} else if a == "int" && b == "char" {
+		return true
+	} else if tc.isUserObject(a) && b == "null" {
+		return true
+	} else if a == "null" && tc.isUserObject(b) {
+		return true
+	} else if a == b {
+		return true
+	}
+	return false
+}
+
+func (tc *TypeChecker) isUserObject(typ string) bool {
+	_, ok := tc.classes[typ]
+	return ok
 }
 
 func (tc *TypeChecker) errorf(line, column int, format string, args ...interface{}) {
