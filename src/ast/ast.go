@@ -135,7 +135,7 @@ type MethodDeclStmt struct {
 	ReturnType Type
 	Name       string
 	Parameters []Parameter
-	Body       BlockStmt
+	Body       Stmt
 	Line       int
 	Column     int
 }
@@ -148,7 +148,7 @@ type ConstructorDeclStmt struct {
 	Modifiers  []Modifier
 	Name       string
 	Parameters []Parameter
-	Body       BlockStmt
+	Body       Stmt
 	Line       int
 	Column     int
 }

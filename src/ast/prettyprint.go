@@ -25,7 +25,7 @@ func (prog Program) String() string {
 //=========================================================================================================
 
 func (expr TypedExpr) String() string {
-	return fmt.Sprintf("TypedExpr{\n  Expression: %s\n}", indentString(fmt.Sprintf("%s", expr.Expr), 1))
+	return fmt.Sprintf("TypedExpr{\n \t\t Type: %s\n \t\t Expression: %s\n\t}", expr.Type, indentString(fmt.Sprintf("%s", expr.Expr), 1))
 }
 
 func (expr IntLiteralExpr) String() string {
@@ -103,7 +103,8 @@ func (expr PostIncrementExpr) String() string {
 //=========================================================================================================
 
 func (stmt TypedStmt) String() string {
-	return fmt.Sprintf("TypedStmt{\n  Statement: %s\n}", indentString(fmt.Sprintf("%s", stmt.Stmt), 1))
+	// TODO: Add Type
+	return fmt.Sprintf("TypedStmt{\n Type: %s\n Statement: %s\n}", stmt.Type, indentString(fmt.Sprintf("%s", stmt.Stmt), 1))
 }
 
 func (stmt BlockStmt) String() string {
@@ -111,7 +112,7 @@ func (stmt BlockStmt) String() string {
 	for i, s := range stmt.Body {
 		body[i] = indentString(fmt.Sprintf("%s", s), 1)
 	}
-	return fmt.Sprintf("BlockStmt{\n  Body: [\n%s\n  ]\n}", strings.Join(body, ",\n"))
+	return fmt.Sprintf("BlockStmt{\n  [\n%s\n  ]\n}", strings.Join(body, ",\n"))
 }
 
 func (stmt ExpressionStmt) String() string {
@@ -124,7 +125,7 @@ func (stmt VarDeclStmt) String() string {
 		modifiers[i] = lexer.TokenKindString(mod.Kind)
 	}
 	return fmt.Sprintf("VarDeclStmt{\n  Modifiers: [%s],\n  Type: %s,\n  Identifier: %s,\n  Value: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, indentString(fmt.Sprintf("%s", stmt.Value), 1))
+		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, fmt.Sprintf("%s", stmt.Value))
 }
 
 func (stmt ClassDeclStmt) String() string {
@@ -150,7 +151,7 @@ func (stmt FieldDeclStmt) String() string {
 		modifiers[i] = lexer.TokenKindString(mod.Kind)
 	}
 	return fmt.Sprintf("FieldDeclStmt{\n  Modifiers: [%s],\n  Type: %s,\n  Identifier: %s,\n  Value: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, indentString(fmt.Sprintf("%s", stmt.Value), 1))
+		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, fmt.Sprintf("%s", stmt.Value))
 }
 
 func (stmt MethodDeclStmt) String() string {
@@ -163,7 +164,7 @@ func (stmt MethodDeclStmt) String() string {
 		params[i] = fmt.Sprintf("%s %s", p.Type.Name, p.Identifier)
 	}
 	return fmt.Sprintf("MethodDeclStmt{\n  Modifiers: [%s],\n  ReturnType: %s,\n  Name: %s,\n  Parameters: [%s],\n  Body: %s\n}",
-		strings.Join(modifiers, ", "), stmt.ReturnType.Name, stmt.Name, strings.Join(params, ", "), indentString(stmt.Body.String(), 1))
+		strings.Join(modifiers, ", "), stmt.ReturnType.Name, stmt.Name, strings.Join(params, ", "), indentString(fmt.Sprintf("%s", stmt.Body), 1))
 }
 
 func (stmt ConstructorDeclStmt) String() string {
@@ -176,7 +177,7 @@ func (stmt ConstructorDeclStmt) String() string {
 		params[i] = fmt.Sprintf("%s %s", p.Type.Name, p.Identifier)
 	}
 	return fmt.Sprintf("ConstructorDeclStmt{\n  Modifiers: [%s],\n  Name: %s,\n  Parameters: [%s],\n  Body: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Name, strings.Join(params, ", "), indentString(stmt.Body.String(), 1))
+		strings.Join(modifiers, ", "), stmt.Name, strings.Join(params, ", "), indentString(fmt.Sprintf("%s", stmt.Body), 1))
 }
 
 func (stmt ReturnStmt) String() string {
