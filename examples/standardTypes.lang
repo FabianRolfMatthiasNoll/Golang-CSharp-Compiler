@@ -1,10 +1,10 @@
 class standardTypes{
-    int intTest;
+    int stringTest;
     char charTest;
 
-    public void Main(int a, int b){
-    }
-}
+    public Bae Main(int a, int b){
+    } 
+} 
 
 class Bae{
 
