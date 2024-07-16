@@ -28,6 +28,14 @@ func (tc *TypeChecker) CheckExpr(expr ast.Expr) ast.TypedExpr {
 			tc.errorf(e.Line, e.Column, "type mismatch: %s and %s", assigneeType, valueType)
 		}
 		return assigneeType
+	case ast.PreDecrementExpr:
+		return tc.CheckUnaryExpr(e)
+	case ast.PreIncrementExpr:
+		return tc.CheckUnaryExpr(e)
+	case ast.PostDecrementExpr:
+		return tc.CheckUnaryExpr(e)
+	case ast.PostIncrementExpr:
+		return tc.CheckUnaryExpr(e)
 	default:
 		tc.errorf(expr.GetLine(), expr.GetColumn(), "unexpected expression")
 	}
@@ -54,4 +62,13 @@ func (tc *TypeChecker) CheckIdentifierExpr(expr ast.IdentifierExpr) ast.TypedExp
 	} else {
 		return ast.TypedExpr{Type: info.Type, Expr: ast.LocalVarExpr(expr)}
 	}
+}
+
+func (tc *TypeChecker) CheckUnaryExpr(expr ast.Expr) ast.TypedExpr {
+	// TODO: Implement
+	switch e := expr.(type) {
+	default:
+		tc.errorf(e.GetLine(), e.GetColumn(), "unexpected unary expression")
+	}
+	return ast.TypedExpr{}
 }

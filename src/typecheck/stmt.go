@@ -121,8 +121,8 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 	for i, stmt := range block.Body {
 		switch stmt := stmt.(type) {
 		// TODO: Check what expression statements are and document it
-		//case ast.ExpressionStmt:
-		//block.Body[i] = tc.CheckExpressionStmt(&stmt)
+		case ast.ExpressionStmt:
+			block.Body[i] = tc.CheckExpressionStmt(&stmt)
 		// case ast.VarDeclStmt:
 		// 	tc.CheckVarDeclStmt(&stmt)
 		// case ast.AssignStmt:
@@ -143,4 +143,9 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 	// TODO: Check type of block by upper bound of returns etc. Also check if all paths return
 	blockType := tc.upperBound(possibleBlockTypes)
 	return ast.TypedStmt{Stmt: block, Type: blockType}
+}
+
+func (tc *TypeChecker) CheckExpressionStmt(expr *ast.ExpressionStmt) ast.TypedStmt {
+	expr.Expression = tc.CheckExpr(expr.Expression)
+	return ast.TypedStmt{Stmt: expr, Type: expr.Expression.(ast.TypedExpr).Type}
 }

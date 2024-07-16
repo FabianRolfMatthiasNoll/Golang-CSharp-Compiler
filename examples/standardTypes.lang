@@ -5,6 +5,9 @@ class standardTypes{
     private standardTypes(int c){}
 
     public void Main(int a, int b){
+        a++;
+        a = 5;
+        int c = 3;
     } 
 } 
 
