@@ -2,7 +2,9 @@ class standardTypes{
     int stringTest;
     char charTest;
 
-    public Bae Main(int a, int b){
+    private standardTypes(int c){}
+
+    public void Main(int a, int b){
     } 
 } 
 

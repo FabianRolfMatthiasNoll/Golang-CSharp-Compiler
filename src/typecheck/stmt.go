@@ -1,6 +1,10 @@
 package typecheck
 
-import "github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/ast"
+import (
+	"fmt"
+
+	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/ast"
+)
 
 func (tc *TypeChecker) CheckClassDeclStmt(class *ast.ClassDeclStmt) {
 	tc.env = NewTypeEnv(tc.env)              // Create new scope
@@ -13,6 +17,8 @@ func (tc *TypeChecker) CheckClassDeclStmt(class *ast.ClassDeclStmt) {
 		}
 	}
 
+	tc.env.Define("this", class.Name, true, false, false)
+
 	// Check members
 	for i, member := range class.Body.Members {
 		var updatedMember ast.ClassMember
@@ -24,9 +30,9 @@ func (tc *TypeChecker) CheckClassDeclStmt(class *ast.ClassDeclStmt) {
 		case ast.MethodDeclStmt:
 			tc.CheckMethodDeclStmt(&member)
 			updatedMember = member
-		// case ast.ConstructorDeclStmt:
-		// 	tc.CheckConstructorDeclStmt(&member)
-		// 	m = member
+		case ast.ConstructorDeclStmt:
+			tc.CheckConstructorDeclStmt(&member)
+			updatedMember = member
 		default:
 			//tc.errorf(member.GetLine(), member.GetColumn(), "unexpected class member")
 			updatedMember = member
@@ -50,6 +56,13 @@ func (tc *TypeChecker) CheckMethodDeclStmt(method *ast.MethodDeclStmt) {
 	tc.env = NewTypeEnv(tc.env)
 	defer func() { tc.env = tc.env.outer }()
 
+	// The entry for this has to exist at this point
+	symbolEntry, _ := tc.env.Lookup("this")
+
+	if symbolEntry.Type == method.Name {
+		tc.errorf(method.GetLine(), method.GetColumn(), "method name can't be the same as the class name")
+	}
+
 	for _, param := range method.Parameters {
 		tc.env.Define(param.Identifier, param.Type.Name, false, false, true)
 	}
@@ -71,9 +84,39 @@ func (tc *TypeChecker) CheckMethodDeclStmt(method *ast.MethodDeclStmt) {
 	}
 }
 
+func (tc *TypeChecker) CheckConstructorDeclStmt(constructor *ast.ConstructorDeclStmt) {
+	tc.env = NewTypeEnv(tc.env)
+	defer func() { tc.env = tc.env.outer }()
+	fmt.Println(constructor.Name)
+	// The entry for this has to exist at this point
+	symbolEntry, _ := tc.env.Lookup("this")
+	fmt.Println(symbolEntry.Type)
+	if symbolEntry.Type != constructor.Name {
+		tc.errorf(constructor.GetLine(), constructor.GetColumn(), "constructor name must be the same as the class name")
+	}
+
+	for _, param := range constructor.Parameters {
+		tc.env.Define(param.Identifier, param.Type.Name, false, false, true)
+	}
+
+	// Check and type constructor body
+	if block, ok := constructor.Body.(ast.BlockStmt); ok {
+		constructor.Body = tc.CheckBlockStmt(&block)
+	} else {
+		tc.errorf(constructor.GetLine(), constructor.GetColumn(), "constructor body should be a block statement")
+	}
+
+	// Check return type
+	if constructor.Body.(ast.TypedStmt).Type != "void" {
+		tc.errorf(constructor.GetLine(), constructor.GetColumn(), "constructor can not have a return")
+	}
+}
+
 func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 	tc.env = NewTypeEnv(tc.env)
 	defer func() { tc.env = tc.env.outer }()
+
+	possibleBlockTypes := []string{}
 
 	for i, stmt := range block.Body {
 		switch stmt := stmt.(type) {
@@ -98,5 +141,6 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 		block.Body[i] = stmt
 	}
 	// TODO: Check type of block by upper bound of returns etc. Also check if all paths return
-	return ast.TypedStmt{Stmt: block, Type: "void"}
+	blockType := tc.upperBound(possibleBlockTypes)
+	return ast.TypedStmt{Stmt: block, Type: blockType}
 }
