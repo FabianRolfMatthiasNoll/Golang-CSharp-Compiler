@@ -78,8 +78,9 @@ func createTokenLookups() {
 	led(lexer.MODULUS, MULTIPLICATIVE, parseBinaryExpr)
 
 	// Literals & Symbols
-	nud(lexer.NUMBER, parsePrimaryExpr)
-	nud(lexer.STRING, parsePrimaryExpr)
+	nud(lexer.INTLITERAL, parsePrimaryExpr)
+	nud(lexer.STRINGLITERAL, parsePrimaryExpr)
+	nud(lexer.CHARLITERAL, parsePrimaryExpr)
 	nud(lexer.IDENTIFIER, parsePrimaryExpr)
 
 	nud(lexer.NULL, parseNullExpr)
@@ -99,7 +100,7 @@ func createTokenLookups() {
 	// Statements
 	stmt(lexer.VAR, parseVarDeclStmt)
 	stmt(lexer.INT, parseVarDeclStmt)
-	stmt(lexer.STRING_TYPE, parseVarDeclStmt)
+	stmt(lexer.STRING, parseVarDeclStmt)
 	stmt(lexer.BOOL, parseVarDeclStmt)
 	stmt(lexer.CHAR, parseVarDeclStmt)
 	stmt(lexer.DOUBLE, parseVarDeclStmt)

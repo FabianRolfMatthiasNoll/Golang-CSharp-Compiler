@@ -7,8 +7,7 @@ type TokenKind int
 // Dev Notes: Iota is making this basically an enum
 const (
 	EOF TokenKind = iota
-	NUMBER
-	STRING
+	INTLITERAL
 	IDENTIFIER
 	OPEN_BRACKET          // [
 	CLOSE_BRACKET         // ]
@@ -80,7 +79,9 @@ const (
 	INT
 	FLOAT
 	DOUBLE
-	STRING_TYPE
+	STRING
+	STRINGLITERAL
+	CHARLITERAL
 )
 
 var keywords = map[string]TokenKind{
@@ -122,7 +123,7 @@ var keywords = map[string]TokenKind{
 	"int":       INT,
 	"float":     FLOAT,
 	"double":    DOUBLE,
-	"string":    STRING_TYPE,
+	"string":    STRINGLITERAL,
 }
 
 type Token struct {
@@ -133,7 +134,7 @@ type Token struct {
 }
 
 func (token Token) String() string {
-	if token.isOneOfMany(NUMBER, STRING, IDENTIFIER) {
+	if token.isOneOfMany(INTLITERAL, STRINGLITERAL, IDENTIFIER) {
 		return fmt.Sprintf("%s (%s) at %d:%d", TokenKindString(token.Kind), token.Value, token.Line, token.Column)
 	}
 	return fmt.Sprintf("%s at %d:%d", TokenKindString(token.Kind), token.Line, token.Column)
@@ -149,7 +150,7 @@ func (token Token) isOneOfMany(expectedTokens ...TokenKind) bool {
 }
 
 func (token Token) Debug() {
-	if token.isOneOfMany(NUMBER, STRING, IDENTIFIER) {
+	if token.isOneOfMany(INTLITERAL, STRINGLITERAL, IDENTIFIER, CHARLITERAL) {
 		fmt.Printf("%s (%s) at %d:%d\n", TokenKindString(token.Kind), token.Value, token.Line, token.Column)
 	} else {
 		fmt.Printf("%s at %d:%d\n", TokenKindString(token.Kind), token.Line, token.Column)
@@ -164,8 +165,10 @@ func TokenKindString(kind TokenKind) string {
 	switch kind {
 	case EOF:
 		return "EOF"
-	case NUMBER:
-		return "NUMBER"
+	case INTLITERAL:
+		return "INTLITERAL"
+	case CHARLITERAL:
+		return "CHARLITERAL"
 	case STRING:
 		return "STRING"
 	case IDENTIFIER:
@@ -300,8 +303,8 @@ func TokenKindString(kind TokenKind) string {
 		return "FLOAT"
 	case DOUBLE:
 		return "DOUBLE"
-	case STRING_TYPE:
-		return "STRING_TYPE"
+	case STRINGLITERAL:
+		return "STRINGLITERAL"
 	case AND:
 		return "AND"
 	case OR:

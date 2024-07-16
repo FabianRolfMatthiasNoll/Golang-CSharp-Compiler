@@ -56,7 +56,8 @@ func parseType(p *parser) ast.Type {
 	return ast.Type{Name: token.Value, Line: token.Line, Column: token.Column}
 }
 
-func assignStandardType(dataType ast.Type, assignedValue ast.Expr, p *parser) ast.Expr {
+func assignStandardType(dataType ast.Type, p *parser) ast.Expr {
+	var assignedValue ast.Expr
 	switch dataType.Name {
 	case "int":
 		assignedValue = ast.IntLiteralExpr{Value: 0, Line: p.currentToken().Line, Column: p.currentToken().Column}
@@ -65,7 +66,7 @@ func assignStandardType(dataType ast.Type, assignedValue ast.Expr, p *parser) as
 	case "string":
 		assignedValue = ast.NullLiteralExpr{Line: p.currentToken().Line, Column: p.currentToken().Column}
 	case "char":
-		assignedValue = ast.CharLiteralExpr{Value: 0, Line: p.currentToken().Line, Column: p.currentToken().Column}
+		assignedValue = ast.CharLiteralExpr{Value: rune(0), Line: p.currentToken().Line, Column: p.currentToken().Column}
 	case "void":
 		panic(fmt.Sprintf("Cannot assign value to variable of type void at line %d, column %d", p.currentToken().Line, p.currentToken().Column))
 	case "var":

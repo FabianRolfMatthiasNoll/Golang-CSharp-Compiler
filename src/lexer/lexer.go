@@ -82,6 +82,7 @@ func createLexer(source string) *lexer {
 			// The Order is really important because the lexer will try to match the first pattern first
 			{regexp.MustCompile(`^[0-9]+(\.[0-9]+)?`), numberHandler},
 			{regexp.MustCompile(`^"[^"]*"`), stringHandler},
+			{regexp.MustCompile(`^'[^']'`), charHandler},
 			{regexp.MustCompile(`^\/\/.*`), skipHandler}, // skip comments
 			{regexp.MustCompile(`^\s+`), skipHandler},    // skip whitespace
 			{regexp.MustCompile(`^\(`), defaultHandler(OPEN_PAREN, "(")},
@@ -132,7 +133,7 @@ func defaultHandler(kind TokenKind, value string) regexHandler {
 
 func numberHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
-	lex.push(NewToken(NUMBER, match, lex.line, lex.column))
+	lex.push(NewToken(INTLITERAL, match, lex.line, lex.column))
 	lex.advanceN(len(match))
 }
 
@@ -144,7 +145,14 @@ func skipHandler(lex *lexer, regex *regexp.Regexp) {
 func stringHandler(lex *lexer, regex *regexp.Regexp) {
 	match := regex.FindString(lex.remainder())
 	match = match[1 : len(match)-1] // remove quotes
-	lex.push(NewToken(STRING, match, lex.line, lex.column))
+	lex.push(NewToken(STRINGLITERAL, match, lex.line, lex.column))
+	lex.advanceN(len(match) + 2) // +2 for the quotes
+}
+
+func charHandler(lex *lexer, regex *regexp.Regexp) {
+	match := regex.FindString(lex.remainder())
+	match = match[1 : len(match)-1] // remove quotes
+	lex.push(NewToken(CHARLITERAL, match, lex.line, lex.column))
 	lex.advanceN(len(match) + 2) // +2 for the quotes
 }
 

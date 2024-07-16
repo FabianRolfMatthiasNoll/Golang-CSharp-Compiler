@@ -70,7 +70,7 @@ func parseVarDeclStmt(p *parser) ast.Stmt {
 		p.advance() // consume '='
 		assignedValue = parseExpression(p, ASSIGNMENT)
 	} else {
-		assignedValue = assignStandardType(dataType, assignedValue, p)
+		assignedValue = assignStandardType(dataType, p)
 	}
 
 	p.expect(lexer.SEMICOLON)
@@ -159,7 +159,7 @@ func parseFieldOrMethod(p *parser, modifiers []ast.Modifier) ast.ClassMember {
 			p.advance() // consume '='
 			assignedValue = parseExpression(p, ASSIGNMENT)
 		} else {
-			assignedValue = assignStandardType(dataType, assignedValue, p)
+			assignedValue = assignStandardType(dataType, p)
 		}
 
 		p.expect(lexer.SEMICOLON)

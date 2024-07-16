@@ -34,11 +34,13 @@ func parseExpression(p *parser, bp bindingPower) ast.Expr {
 
 func parsePrimaryExpr(p *parser) ast.Expr {
 	switch p.currentTokenKind() {
-	case lexer.NUMBER:
+	case lexer.INTLITERAL:
 		number, _ := strconv.ParseInt(p.advance().Value, 0, 64)
 		return ast.IntLiteralExpr{Value: number, Line: p.currentToken().Line, Column: p.currentToken().Column}
-	case lexer.STRING:
+	case lexer.STRINGLITERAL:
 		return ast.StringExpr{Value: p.advance().Value, Line: p.currentToken().Line, Column: p.currentToken().Column}
+	case lexer.CHARLITERAL:
+		return ast.CharLiteralExpr{Value: rune(p.advance().Value[0]), Line: p.currentToken().Line, Column: p.currentToken().Column}
 	case lexer.IDENTIFIER:
 		token := p.advance()
 		var expr ast.Expr = ast.IdentifierExpr{Name: token.Value, Line: token.Line, Column: token.Column}
