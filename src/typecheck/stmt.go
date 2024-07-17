@@ -138,7 +138,6 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 		default:
 			tc.errorf(stmt.GetLine(), stmt.GetColumn(), "unexpected statement")
 		}
-		block.Body[i] = stmt
 	}
 	blockType := tc.upperBound(possibleBlockTypes)
 	return ast.TypedStmt{Stmt: block, Type: blockType}
