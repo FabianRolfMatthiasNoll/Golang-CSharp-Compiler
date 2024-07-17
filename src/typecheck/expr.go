@@ -66,9 +66,9 @@ func (tc *TypeChecker) CheckIdentifierExpr(expr ast.IdentifierExpr) ast.TypedExp
 
 func (tc *TypeChecker) CheckUnaryExpr(expr ast.Expr) ast.TypedExpr {
 	// TODO: Implement
-	switch e := expr.(type) {
-	default:
-		tc.errorf(e.GetLine(), e.GetColumn(), "unexpected unary expression")
-	}
+	// switch e := expr.(type) {
+	// default:
+	// 	tc.errorf(e.GetLine(), e.GetColumn(), "unexpected unary expression")
+	// }
 	return ast.TypedExpr{}
 }

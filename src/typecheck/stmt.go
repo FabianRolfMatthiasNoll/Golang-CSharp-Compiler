@@ -128,7 +128,8 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 		case ast.WhileStmt:
 			//block.Body[i] = tc.CheckWhileStmt(&stmt)
 		case ast.ReturnStmt:
-			//block.Body[i] = tc.CheckReturnStmt(&stmt)
+			block.Body[i] = tc.CheckReturnStmt(&stmt)
+			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
 		case ast.BreakStmt:
 			//block.Body[i] = tc.CheckBreakStmt(&stmt)
 		case ast.ContinueStmt:
@@ -147,6 +148,23 @@ func (tc *TypeChecker) CheckExpressionStmt(expr *ast.ExpressionStmt) ast.TypedSt
 }
 
 func (tc *TypeChecker) CheckReturnStmt(stmt *ast.ReturnStmt) ast.TypedStmt {
-	expr := tc.CheckExpr(stmt.Value)
-	return ast.TypedStmt{Stmt: stmt, Type: expr.Type}
+
+	typ := "void"
+	if stmt.Value != nil {
+		stmt.Value = tc.CheckExpr(stmt.Value)
+		typ = stmt.Value.(ast.TypedExpr).Type
+	}
+
+	// thisMethod must exist at this point
+	method, exists := tc.env.Lookup("thisMethod")
+
+	if !exists {
+		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "return statement outside of method")
+	}
+
+	if !tc.isTypeCompatible(method.Type, typ) {
+		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "type mismatch: expected %s, got %s", method.Type, typ)
+	}
+
+	return ast.TypedStmt{Stmt: stmt, Type: typ}
 }

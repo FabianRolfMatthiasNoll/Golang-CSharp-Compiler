@@ -103,7 +103,6 @@ func (expr PostIncrementExpr) String() string {
 //=========================================================================================================
 
 func (stmt TypedStmt) String() string {
-	// TODO: Add Type
 	return fmt.Sprintf("TypedStmt{\n Type: %s\n Statement: %s\n}", stmt.Type, indentString(fmt.Sprintf("%s", stmt.Stmt), 1))
 }
 
