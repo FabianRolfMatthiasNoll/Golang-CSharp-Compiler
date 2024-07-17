@@ -120,27 +120,26 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 
 	for i, stmt := range block.Body {
 		switch stmt := stmt.(type) {
-		// TODO: Check what expression statements are and document it
 		case ast.ExpressionStmt:
 			block.Body[i] = tc.CheckExpressionStmt(&stmt)
-		// case ast.VarDeclStmt:
-		// 	tc.CheckVarDeclStmt(&stmt)
-		// case ast.AssignStmt:
-		// 	tc.CheckAssignStmt(&stmt)
-		// case ast.ReturnStmt:
-		// 	tc.CheckReturnStmt(&stmt)
-		// case ast.IfStmt:
-		// 	tc.CheckIfStmt(&stmt)
-		// case ast.WhileStmt:
-		// 	tc.CheckWhileStmt(&stmt)
-		// case ast.MethodCallStmt:
-		// 	tc.CheckMethodCallStmt(&stmt)
+		case ast.BlockStmt:
+			block.Body[i] = tc.CheckBlockStmt(&stmt)
+			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
+		case ast.IfStmt:
+			//block.Body[i] = tc.CheckIfStmt(&stmt)
+		case ast.WhileStmt:
+			//block.Body[i] = tc.CheckWhileStmt(&stmt)
+		case ast.ReturnStmt:
+			//block.Body[i] = tc.CheckReturnStmt(&stmt)
+		case ast.BreakStmt:
+			//block.Body[i] = tc.CheckBreakStmt(&stmt)
+		case ast.ContinueStmt:
+			//block.Body[i] = tc.CheckContinueStmt(&stmt)
 		default:
 			tc.errorf(stmt.GetLine(), stmt.GetColumn(), "unexpected statement")
 		}
 		block.Body[i] = stmt
 	}
-	// TODO: Check type of block by upper bound of returns etc. Also check if all paths return
 	blockType := tc.upperBound(possibleBlockTypes)
 	return ast.TypedStmt{Stmt: block, Type: blockType}
 }
