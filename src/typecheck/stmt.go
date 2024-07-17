@@ -1,8 +1,6 @@
 package typecheck
 
 import (
-	"fmt"
-
 	"github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/ast"
 )
 
@@ -87,10 +85,10 @@ func (tc *TypeChecker) CheckMethodDeclStmt(method *ast.MethodDeclStmt) {
 func (tc *TypeChecker) CheckConstructorDeclStmt(constructor *ast.ConstructorDeclStmt) {
 	tc.env = NewTypeEnv(tc.env)
 	defer func() { tc.env = tc.env.outer }()
-	fmt.Println(constructor.Name)
+
 	// The entry for this has to exist at this point
 	symbolEntry, _ := tc.env.Lookup("this")
-	fmt.Println(symbolEntry.Type)
+
 	if symbolEntry.Type != constructor.Name {
 		tc.errorf(constructor.GetLine(), constructor.GetColumn(), "constructor name must be the same as the class name")
 	}
