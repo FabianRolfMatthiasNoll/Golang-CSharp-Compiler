@@ -28,6 +28,10 @@ func parseStatement(p *parser) ast.Stmt {
 	}
 	p.expect(lexer.SEMICOLON)
 
+	if !isAllowedExprType(expression) {
+		panic(fmt.Sprintf("only assignment, methodcalls, increment, decrement or object instanziations are allowed to be used as a statement. Error at line  %d, column %d", line, column))
+	}
+
 	return ast.ExpressionStmt{
 		Expression: expression,
 		Line:       line,
@@ -374,4 +378,13 @@ func parseDefaultCase(p *parser) ast.Stmt {
 	bodyBlock := ast.BlockStmt{Body: body, Line: line, Column: column}
 
 	return bodyBlock
+}
+
+func isAllowedExprType(expr ast.Expr) bool {
+	switch expr.(type) {
+	case ast.AssignmentExpr, ast.MethodCallExpr, ast.PostDecrementExpr, ast.PreDecrementExpr, ast.PostIncrementExpr, ast.PreIncrementExpr, ast.ConstructorCallExpr:
+		return true
+	default:
+		return false
+	}
 }
