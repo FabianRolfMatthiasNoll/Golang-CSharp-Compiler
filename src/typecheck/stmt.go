@@ -148,3 +148,8 @@ func (tc *TypeChecker) CheckExpressionStmt(expr *ast.ExpressionStmt) ast.TypedSt
 	expr.Expression = tc.CheckExpr(expr.Expression)
 	return ast.TypedStmt{Stmt: expr, Type: expr.Expression.(ast.TypedExpr).Type}
 }
+
+func (tc *TypeChecker) CheckReturnStmt(stmt *ast.ReturnStmt) ast.TypedStmt {
+	expr := tc.CheckExpr(stmt.Value)
+	return ast.TypedStmt{Stmt: stmt, Type: expr.Type}
+}
