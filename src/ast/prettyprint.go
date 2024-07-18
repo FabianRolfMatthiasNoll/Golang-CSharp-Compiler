@@ -25,19 +25,27 @@ func (prog Program) String() string {
 //=========================================================================================================
 
 func (expr TypedExpr) String() string {
-	return fmt.Sprintf("TypedExpr{\n \t\t Type: %s\n \t\t Expression: %s\n\t}", expr.Type, indentString(fmt.Sprintf("%s", expr.Expr), 1))
+	return fmt.Sprintf("TypedExpr{\n  Type: %s,\n  Expression: %s\n}", expr.Type, indentString(fmt.Sprintf("%s", expr.Expr), 1))
 }
 
 func (expr IntLiteralExpr) String() string {
-	return fmt.Sprintf("IntLiteralExpr{Value: %d}", expr.Value)
+	return fmt.Sprintf("IntLiteralExpr{\n  Value: %d\n}", expr.Value)
 }
 
 func (expr StringExpr) String() string {
-	return fmt.Sprintf("StringExpr{Value: %s}", expr.Value)
+	return fmt.Sprintf("StringExpr{\n  Value: %s\n}", expr.Value)
 }
 
 func (expr IdentifierExpr) String() string {
-	return fmt.Sprintf("IdentifierExpr{Name: %s}", expr.Name)
+	return fmt.Sprintf("IdentifierExpr{\n  Name: %s\n}", expr.Name)
+}
+
+func (expr FieldVarExpr) String() string {
+	return fmt.Sprintf("FieldVarExpr{\n  Name: %s\n}", expr.Name)
+}
+
+func (expr LocalVarExpr) String() string {
+	return fmt.Sprintf("LocalVarExpr{\n  Name: %s\n}", expr.Name)
 }
 
 func (expr ThisExpr) String() string {
@@ -45,7 +53,7 @@ func (expr ThisExpr) String() string {
 }
 
 func (expr BoolLiteralExpr) String() string {
-	return fmt.Sprintf("BoolLiteralExpr{Value: %t}", expr.Value)
+	return fmt.Sprintf("BoolLiteralExpr{\n  Value: %t\n}", expr.Value)
 }
 
 func (expr NullLiteralExpr) String() string {
@@ -53,7 +61,7 @@ func (expr NullLiteralExpr) String() string {
 }
 
 func (expr CharLiteralExpr) String() string {
-	return fmt.Sprintf("CharExpr{Value: %c}", expr.Value)
+	return fmt.Sprintf("CharExpr{\n  Value: %c\n}", expr.Value)
 }
 
 func (expr BinaryExpr) String() string {
@@ -71,7 +79,11 @@ func (expr AssignmentExpr) String() string {
 }
 
 func (expr MethodCallExpr) String() string {
-	return fmt.Sprintf("MethodCallExpr{\n  Receiver: %s,\n  MethodName: %s,\n  Arguments: %s\n}", indentString(fmt.Sprintf("%s", expr.Receiver), 1), expr.MethodName, indentString(fmt.Sprintf("%s", expr.Args), 1))
+	args := make([]string, len(expr.Args))
+	for i, arg := range expr.Args {
+		args[i] = indentString(fmt.Sprintf("%s", arg), 2)
+	}
+	return fmt.Sprintf("MethodCallExpr{\n  Receiver: %s,\n  MethodName: %s,\n  Arguments: [\n%s\n  ]\n}", indentString(fmt.Sprintf("%s", expr.Receiver), 1), expr.MethodName, strings.Join(args, ",\n"))
 }
 
 func (expr MemberAccessExpr) String() string {
@@ -79,7 +91,11 @@ func (expr MemberAccessExpr) String() string {
 }
 
 func (expr ConstructorCallExpr) String() string {
-	return fmt.Sprintf("ConstructorCallExpr{\n  ClassName: %s,\n  Arguments: %s\n}", expr.TypeName, indentString(fmt.Sprintf("%s", expr.Args), 1))
+	args := make([]string, len(expr.Args))
+	for i, arg := range expr.Args {
+		args[i] = indentString(fmt.Sprintf("%s", arg), 2)
+	}
+	return fmt.Sprintf("ConstructorCallExpr{\n  ClassName: %s,\n  Arguments: [\n%s\n  ]\n}", expr.TypeName, strings.Join(args, ",\n"))
 }
 
 func (expr PreDecrementExpr) String() string {
@@ -103,7 +119,7 @@ func (expr PostIncrementExpr) String() string {
 //=========================================================================================================
 
 func (stmt TypedStmt) String() string {
-	return fmt.Sprintf("TypedStmt{\n Type: %s\n Statement: %s\n}", stmt.Type, indentString(fmt.Sprintf("%s", stmt.Stmt), 1))
+	return fmt.Sprintf("TypedStmt{\n  Type: %s,\n  Statement: %s\n}", stmt.Type, indentString(fmt.Sprintf("%s", stmt.Stmt), 1))
 }
 
 func (stmt BlockStmt) String() string {
@@ -124,7 +140,7 @@ func (stmt VarDeclStmt) String() string {
 		modifiers[i] = lexer.TokenKindString(mod.Kind)
 	}
 	return fmt.Sprintf("VarDeclStmt{\n  Modifiers: [%s],\n  Type: %s,\n  Identifier: %s,\n  Value: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, fmt.Sprintf("%s", stmt.Value))
+		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, indentString(fmt.Sprintf("%s", stmt.Value), 1))
 }
 
 func (stmt ClassDeclStmt) String() string {
@@ -150,7 +166,7 @@ func (stmt FieldDeclStmt) String() string {
 		modifiers[i] = lexer.TokenKindString(mod.Kind)
 	}
 	return fmt.Sprintf("FieldDeclStmt{\n  Modifiers: [%s],\n  Type: %s,\n  Identifier: %s,\n  Value: %s\n}",
-		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, fmt.Sprintf("%s", stmt.Value))
+		strings.Join(modifiers, ", "), stmt.Type.Name, stmt.Identifier, indentString(fmt.Sprintf("%s", stmt.Value), 1))
 }
 
 func (stmt MethodDeclStmt) String() string {
@@ -180,7 +196,7 @@ func (stmt ConstructorDeclStmt) String() string {
 }
 
 func (stmt ReturnStmt) String() string {
-	return fmt.Sprintf("ReturnStmt{\n  Value: %s,\n}", indentString(fmt.Sprintf("%s", stmt.Value), 1))
+	return fmt.Sprintf("ReturnStmt{\n  Value: %s\n}", indentString(fmt.Sprintf("%s", stmt.Value), 1))
 }
 
 func (stmt IfStmt) String() string {
