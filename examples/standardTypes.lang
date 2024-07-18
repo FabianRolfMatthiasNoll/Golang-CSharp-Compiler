@@ -1,11 +1,14 @@
 class standardTypes{
     int stringTest = 3;
+    int c = 4;
     char charTest;
 
     private standardTypes(int c){}
 
-    public void Main(int a, int b){
-        return;
+    public int Main(int a, int b){
+        while (a < b){
+            return c;
+        }
     } 
 } 
 

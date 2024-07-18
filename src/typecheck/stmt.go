@@ -126,14 +126,15 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 		case ast.IfStmt:
 			//block.Body[i] = tc.CheckIfStmt(&stmt)
 		case ast.WhileStmt:
-			//block.Body[i] = tc.CheckWhileStmt(&stmt)
+			block.Body[i] = tc.CheckWhileStmt(&stmt)
+			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
 		case ast.ReturnStmt:
 			block.Body[i] = tc.CheckReturnStmt(&stmt)
 			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
 		case ast.BreakStmt:
-			//block.Body[i] = tc.CheckBreakStmt(&stmt)
+			block.Body[i] = ast.TypedStmt{Stmt: stmt, Type: "void"}
 		case ast.ContinueStmt:
-			//block.Body[i] = tc.CheckContinueStmt(&stmt)
+			block.Body[i] = ast.TypedStmt{Stmt: stmt, Type: "void"}
 		default:
 			tc.errorf(stmt.GetLine(), stmt.GetColumn(), "unexpected statement")
 		}
@@ -156,15 +157,27 @@ func (tc *TypeChecker) CheckReturnStmt(stmt *ast.ReturnStmt) ast.TypedStmt {
 	}
 
 	// thisMethod must exist at this point
-	method, exists := tc.env.Lookup("thisMethod")
-
-	if !exists {
-		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "return statement outside of method")
-	}
+	method, _ := tc.env.Lookup("thisMethod")
 
 	if !tc.isTypeCompatible(method.Type, typ) {
 		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "type mismatch: expected %s, got %s", method.Type, typ)
 	}
 
 	return ast.TypedStmt{Stmt: stmt, Type: typ}
+}
+
+func (tc *TypeChecker) CheckWhileStmt(stmt *ast.WhileStmt) ast.TypedStmt {
+	stmt.Condition = tc.CheckExpr(stmt.Condition)
+
+	if stmt.Condition.(ast.TypedExpr).Type != "bool" {
+		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "type mismatch: expected boolean, got %s", stmt.Condition.(ast.TypedExpr).Type)
+	}
+
+	if block, ok := stmt.Body.(ast.BlockStmt); ok {
+		stmt.Body = tc.CheckBlockStmt(&block)
+	} else {
+		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "while body should be a block statement")
+	}
+
+	return ast.TypedStmt{Stmt: stmt, Type: stmt.Body.(ast.TypedStmt).Type}
 }

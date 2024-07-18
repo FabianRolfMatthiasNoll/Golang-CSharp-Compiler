@@ -17,6 +17,17 @@ func (tc *TypeChecker) isTypeCompatible(a, b string) bool {
 	return false
 }
 
+func (tc *TypeChecker) isBinaryCompatible(a, b string) bool {
+	if a == "char" && b == "int" {
+		return true
+	} else if a == "int" && b == "char" {
+		return true
+	} else if a == b {
+		return true
+	}
+	return false
+}
+
 func (tc *TypeChecker) isUserObject(typ string) bool {
 	_, ok := tc.classes[typ]
 	return ok
@@ -33,13 +44,13 @@ func (tc *TypeChecker) upperBound(types []string) string {
 
 	// Example of a type hierarchy for determining upper bounds
 	typeHierarchy := map[string]int{
-		"int":     1,
-		"float":   2,
-		"string":  3,
-		"object":  4,
-		"null":    5,
-		"boolean": 6,
-		"char":    7,
+		"int":    1,
+		"float":  2,
+		"string": 3,
+		"object": 4,
+		"null":   5,
+		"bool":   6,
+		"char":   7,
 	}
 
 	maxRank := 0
