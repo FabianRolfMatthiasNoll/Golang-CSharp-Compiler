@@ -42,9 +42,13 @@ func (tc *TypeChecker) CheckExpr(expr ast.Expr) ast.TypedExpr {
 	return ast.TypedExpr{}
 }
 
-func (tc *TypeChecker) CheckBinaryExpr(expr ast.Expr) ast.TypedExpr {
-	// TODO: Implement
-	return ast.TypedExpr{}
+func (tc *TypeChecker) CheckBinaryExpr(expr ast.BinaryExpr) ast.TypedExpr {
+	expr.Left = tc.CheckExpr(expr.Left)
+	expr.Right = tc.CheckExpr(expr.Right)
+	if !tc.isBinaryCompatible(expr.Left.(ast.TypedExpr).Type, expr.Right.(ast.TypedExpr).Type) {
+		tc.errorf(expr.Line, expr.Column, "type mismatch during binary expression: %s and %s", expr.Left.(ast.TypedExpr).Type, expr.Right.(ast.TypedExpr).Type)
+	}
+	return ast.TypedExpr{Expr: expr, Type: "bool"}
 }
 
 func (tc *TypeChecker) CheckMethodCallExpr(expr ast.MethodCallExpr) ast.TypedExpr {
