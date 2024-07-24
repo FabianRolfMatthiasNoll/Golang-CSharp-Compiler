@@ -7,7 +7,12 @@ class standardTypes{
 
     public int Main(int a, int b){
         while (a < b){
-            return c;
+            if (a > b) {
+                return c;
+            } else {
+                b++;
+                return a;
+            }
         }
     } 
 } 

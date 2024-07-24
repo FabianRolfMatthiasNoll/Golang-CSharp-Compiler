@@ -2,7 +2,7 @@ package typecheck
 
 import "github.com/FabianRolfMatthiasNoll/Golang-CSharp-Compiler/src/ast"
 
-// TODO: Impelement rest of check expr but with some sort of structure to control this monster of code
+// TODO: Implement rest of check expr but with some sort of structure to control this monster of code
 func (tc *TypeChecker) CheckExpr(expr ast.Expr) ast.TypedExpr {
 	switch e := expr.(type) {
 	case ast.IntLiteralExpr:
@@ -39,7 +39,7 @@ func (tc *TypeChecker) CheckExpr(expr ast.Expr) ast.TypedExpr {
 	default:
 		tc.errorf(expr.GetLine(), expr.GetColumn(), "unexpected expression")
 	}
-	return ast.TypedExpr{}
+	return ast.TypedExpr{Type: "void"}
 }
 
 func (tc *TypeChecker) CheckBinaryExpr(expr ast.BinaryExpr) ast.TypedExpr {
@@ -53,7 +53,7 @@ func (tc *TypeChecker) CheckBinaryExpr(expr ast.BinaryExpr) ast.TypedExpr {
 
 func (tc *TypeChecker) CheckMethodCallExpr(expr ast.MethodCallExpr) ast.TypedExpr {
 	// TODO: Implement
-	return ast.TypedExpr{}
+	return ast.TypedExpr{Type: "void"}
 }
 
 func (tc *TypeChecker) CheckIdentifierExpr(expr ast.IdentifierExpr) ast.TypedExpr {
@@ -74,5 +74,15 @@ func (tc *TypeChecker) CheckUnaryExpr(expr ast.Expr) ast.TypedExpr {
 	// default:
 	// 	tc.errorf(e.GetLine(), e.GetColumn(), "unexpected unary expression")
 	// }
-	return ast.TypedExpr{}
+	return ast.TypedExpr{Type: "void"}
+}
+
+func (tc *TypeChecker) checkBoolCondition(condition ast.Expr) ast.TypedExpr {
+	condition = tc.CheckExpr(condition)
+
+	if condition.(ast.TypedExpr).Type != "bool" {
+		tc.errorf(condition.GetLine(), condition.GetColumn(), "type mismatch: expected boolean, got %s", condition.(ast.TypedExpr).Type)
+	}
+
+	return condition.(ast.TypedExpr)
 }

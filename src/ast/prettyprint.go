@@ -220,7 +220,7 @@ func (stmt BreakStmt) String() string {
 func (stmt SwitchStmt) String() string {
 	cases := make([]string, len(stmt.Cases))
 	for i, c := range stmt.Cases {
-		cases[i] = indentString(fmt.Sprintf("%s", c), 1)
+		cases[i] = indentString(c.String(), 1)
 	}
 	defaultCase := ""
 	if stmt.Default != nil {

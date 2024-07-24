@@ -124,7 +124,8 @@ func (tc *TypeChecker) CheckBlockStmt(block *ast.BlockStmt) ast.TypedStmt {
 			block.Body[i] = tc.CheckBlockStmt(&stmt)
 			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
 		case ast.IfStmt:
-			//block.Body[i] = tc.CheckIfStmt(&stmt)
+			block.Body[i] = tc.CheckIfStmt(&stmt)
+			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
 		case ast.WhileStmt:
 			block.Body[i] = tc.CheckWhileStmt(&stmt)
 			possibleBlockTypes = append(possibleBlockTypes, block.Body[i].(ast.TypedStmt).Type)
@@ -167,11 +168,7 @@ func (tc *TypeChecker) CheckReturnStmt(stmt *ast.ReturnStmt) ast.TypedStmt {
 }
 
 func (tc *TypeChecker) CheckWhileStmt(stmt *ast.WhileStmt) ast.TypedStmt {
-	stmt.Condition = tc.CheckExpr(stmt.Condition)
-
-	if stmt.Condition.(ast.TypedExpr).Type != "bool" {
-		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "type mismatch: expected boolean, got %s", stmt.Condition.(ast.TypedExpr).Type)
-	}
+	stmt.Condition = tc.checkBoolCondition(stmt.Condition)
 
 	if block, ok := stmt.Body.(ast.BlockStmt); ok {
 		stmt.Body = tc.CheckBlockStmt(&block)
@@ -180,4 +177,31 @@ func (tc *TypeChecker) CheckWhileStmt(stmt *ast.WhileStmt) ast.TypedStmt {
 	}
 
 	return ast.TypedStmt{Stmt: stmt, Type: stmt.Body.(ast.TypedStmt).Type}
+}
+
+func (tc *TypeChecker) CheckIfStmt(stmt *ast.IfStmt) ast.TypedStmt {
+	stmt.Condition = tc.checkBoolCondition(stmt.Condition)
+	var thenType, elseType string
+
+	if thenBlock, ok := stmt.Then.(ast.BlockStmt); ok {
+		stmt.Then = tc.CheckBlockStmt(&thenBlock)
+		thenType = stmt.Then.(ast.TypedStmt).Type
+	} else {
+		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "while body should be a block statement")
+	}
+
+	if elseBlock, ok := stmt.Else.(ast.BlockStmt); ok {
+		stmt.Else = tc.CheckBlockStmt(&elseBlock)
+		elseType = stmt.Else.(ast.TypedStmt).Type
+	} else {
+		tc.errorf(stmt.GetLine(), stmt.GetColumn(), "while body should be a block statement")
+	}
+
+	ifType := tc.upperBound([]string{thenType, elseType})
+
+	if thenType == "void" || elseType == "void" {
+		ifType = "void"
+	}
+
+	return ast.TypedStmt{Stmt: stmt, Type: ifType, Line: stmt.Line, Column: stmt.Column}
 }
